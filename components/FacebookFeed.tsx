@@ -15,24 +15,16 @@ interface FacebookFeedProps {
   height?: number;
 }
 
+const APP_ID = "1190569869816278";
+
 export default function FacebookFeed({
   pageUrl = "https://www.facebook.com/667738963347662",
-  height = 500,
+  height = 600,
 }: FacebookFeedProps) {
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
-  const isLocalhost =
-    typeof window !== "undefined" &&
-    (window.location.hostname === "localhost" ||
-      window.location.hostname === "127.0.0.1");
 
   useEffect(() => {
-    // Auf localhost direkt Fallback zeigen
-    if (isLocalhost) {
-      setStatus("error");
-      return;
-    }
-
-    const errorTimeout = setTimeout(() => setStatus("error"), 8000);
+    const errorTimeout = setTimeout(() => setStatus("error"), 10000);
 
     function parseFeed() {
       const el = document.getElementById("fb-feed-container");
@@ -46,7 +38,7 @@ export default function FacebookFeed({
           setStatus("error");
           clearTimeout(errorTimeout);
         }
-      }, 300);
+      }, 500);
     }
 
     if (window.FB) {
@@ -59,7 +51,7 @@ export default function FacebookFeed({
     if (!document.getElementById("facebook-sdk")) {
       const script = document.createElement("script");
       script.id = "facebook-sdk";
-      script.src = "https://connect.facebook.net/de_DE/sdk.js#xfbml=1&version=v18.0";
+      script.src = `https://connect.facebook.net/de_DE/sdk.js#xfbml=1&version=v18.0&appId=${APP_ID}`;
       script.async = true;
       script.defer = true;
       script.crossOrigin = "anonymous";
@@ -71,17 +63,15 @@ export default function FacebookFeed({
     }
 
     return () => clearTimeout(errorTimeout);
-  }, [isLocalhost]);
+  }, []);
 
-  // Fallback – wird auf localhost immer gezeigt, live nur bei Fehler
   if (status === "error") {
     return (
       <div className={styles.fallback}>
         <div className={styles.fbLogo}>f</div>
         <h3 className={styles.fallbackTitle}>Wir sind auf Facebook</h3>
         <p className={styles.fallbackText}>
-          Folgt uns auf Facebook für aktuelle Neuigkeiten, Fotos vom
-          Schützenfest und Ankündigungen direkt aus der Bruderschaft.
+          Folgt uns für aktuelle Neuigkeiten, Fotos und Ankündigungen direkt aus der Bruderschaft.
         </p>
         <a
           href={pageUrl}
@@ -91,11 +81,6 @@ export default function FacebookFeed({
         >
           Zur Facebook-Seite →
         </a>
-        {isLocalhost && (
-          <p className={styles.devNote}>
-            💡 Der Live-Feed wird nach dem Deployment auf schuetzen-buederich.de sichtbar sein.
-          </p>
-        )}
       </div>
     );
   }
