@@ -1,0 +1,68 @@
+.koenigCard {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  padding: 3rem;
+  text-align: center;
+  border-top: 4px solid var(--gold);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.kroene {
+  font-size: 3.5rem;
+  margin-bottom: 1rem;
+}
+
+.koenigCard h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  color: var(--green);
+  margin-bottom: 0.5rem;
+}
+
+.titel {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1.25rem;
+}
+
+.koenigCard p {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.hofstaatGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.25rem;
+}
+
+.hofstaatCard {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem 1rem;
+  text-align: center;
+  border-bottom: 2px solid var(--gold);
+}
+
+.hofstaatRolle {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 0.3rem;
+}
+
+.hofstaatName {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  color: var(--green);
+  font-size: 0.9rem;
+}

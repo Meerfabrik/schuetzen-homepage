@@ -1,0 +1,173 @@
+/* ── HERO ── */
+.hero {
+  background: linear-gradient(140deg, var(--green) 0%, var(--green-mid) 65%, #3a5c30 100%);
+  color: white;
+  padding: 6rem 1.5rem 5rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+
+.heroBadge {
+  display: inline-block;
+  background: rgba(200, 151, 42, 0.2);
+  border: 1px solid var(--gold);
+  color: var(--gold-light);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 0.3rem 1rem;
+  border-radius: 2px;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.heroTitle {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2rem, 5.5vw, 3.6rem);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 1.2rem;
+  position: relative;
+}
+
+.heroSub {
+  display: block;
+  font-style: normal;
+  color: var(--gold-light);
+  font-size: 0.7em;
+  font-weight: 400;
+  margin-top: 0.4rem;
+}
+
+.heroText {
+  font-size: 1.05rem;
+  opacity: 0.82;
+  max-width: 580px;
+  margin: 0 auto 2rem;
+  font-weight: 300;
+  position: relative;
+  line-height: 1.7;
+}
+
+.heroDivider {
+  width: 56px;
+  height: 2px;
+  background: var(--gold);
+  margin: 0 auto 2rem;
+  position: relative;
+}
+
+.heroCtas {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+/* ── WELCOME BAND ── */
+.welcomeBand {
+  background: var(--green);
+  padding: 3.5rem 1.5rem;
+}
+
+.welcomeGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  text-align: center;
+}
+
+.welcomeItem {
+  color: white;
+}
+
+.welcomeIcon {
+  font-size: 2.2rem;
+  margin-bottom: 0.75rem;
+}
+
+.welcomeItem h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--gold-light);
+  margin-bottom: 0.5rem;
+}
+
+.welcomeItem p {
+  font-size: 0.88rem;
+  opacity: 0.78;
+  line-height: 1.6;
+}
+
+/* ── NEWS + FACEBOOK ── */
+.newsSection {
+  background: var(--cream);
+}
+
+/* Zweispaltig: News links, Facebook rechts */
+.newsFacebookGrid {
+  display: grid;
+  grid-template-columns: 1fr 500px;
+  gap: 3rem;
+  align-items: start;
+}
+
+.newsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+/* ── CTA BAND ── */
+.ctaBand {
+  background: var(--cream-dark);
+  border-top: 3px solid var(--gold);
+  padding: 4rem 1.5rem;
+}
+
+.ctaBand h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  color: var(--green);
+  margin-bottom: 0.75rem;
+}
+
+.ctaBand p {
+  color: var(--text-muted);
+  max-width: 520px;
+  margin: 0 auto;
+  font-size: 0.95rem;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1100px) {
+  /* Facebook-Spalte auf 400px verkleinern */
+  .newsFacebookGrid {
+    grid-template-columns: 1fr 400px;
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 860px) {
+  /* Untereinander stapeln */
+  .newsFacebookGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero { padding: 4rem 1.2rem 3.5rem; }
+  .welcomeGrid { grid-template-columns: 1fr; gap: 1.5rem; }
+}
