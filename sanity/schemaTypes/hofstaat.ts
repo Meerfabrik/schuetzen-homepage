@@ -5,8 +5,7 @@ export const hofstaatSchema = defineType({
   title: "Aktueller Hofstaat",
   type: "document",
   icon: () => "👑",
-  // Singleton – es gibt immer nur einen aktuellen Hofstaat
-  __experimental_actions: ["update", "publish"],
+
   fields: [
     defineField({
       name: "regentschaftsjahr",
