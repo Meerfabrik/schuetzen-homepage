@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { NAV_ITEMS } from "@/lib/navigation";
+import { SITE_LOGO } from "@/lib/site";
 import type { NavChild, NavItem } from "@/lib/types";
 import styles from "./Header.module.css";
 
@@ -32,10 +33,22 @@ function DropdownMenu({ items }: { items: NavChild[] }) {
   );
 }
 
+const SCROLL_THRESHOLD = 40;
+
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const [openMobileItem, setOpenMobileItem] = useState<string | null>(null);
+  const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const headerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    function handleScroll() {
+      setIsScrolled(window.scrollY > SCROLL_THRESHOLD);
+    }
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -48,15 +61,19 @@ export default function Header() {
   }, []);
 
   return (
-    <header className={styles.header} ref={headerRef}>
+    <header
+      className={`${styles.header} ${isScrolled ? styles.scrolled : ""}`}
+      ref={headerRef}
+    >
       <div className={styles.inner}>
         <Link href="/" className={styles.logo} onClick={() => setMobileOpen(false)}>
           <Image
-            src="https://www.schuetzen-buederich.de/wp-content/uploads/LogoSchutzen.png"
-            alt="Schützenbruderschaft Büderich"
-            width={46}
-            height={46}
-            style={{ filter: "brightness(0) invert(1)", objectFit: "contain" }}
+            src={SITE_LOGO.src}
+            alt={SITE_LOGO.alt}
+            width={SITE_LOGO.width}
+            height={SITE_LOGO.height}
+            style={{ objectFit: "contain" }}
+            priority
           />
           <span className={styles.logoText}>
             St. Sebastianus Schützenbruderschaft Büderich 1567

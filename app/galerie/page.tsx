@@ -1,79 +1,70 @@
-import Image from "next/image";
-import { getAllGalerien } from "@/lib/sanity/queries";
-import { urlFor } from "@/lib/sanity/client";
+import { getGalleryImages, getCloudinaryImageUrl } from "@/lib/cloudinary";
+import GalerieGrid from "@/components/GalerieGrid";
 import styles from "./page.module.css";
-
-export const revalidate = 60;
 
 export const metadata = {
   title: "Galerie",
-  description: "Bildergalerie der St. Sebastianus Schützenbruderschaft Büderich.",
+  description:
+    "Bilder und Fotos der St. Sebastianus Schützenbruderschaft Büderich – Schützenfeste, Historien und Bruderschaftsleben.",
 };
 
-const KATEGORIE_LABELS: Record<string, string> = {
-  koenige: "Schützenkönig:innen",
-  historie: "Historien Galerie",
-  ehrenkoenige: "Ehrenkönig:innen",
-  jungkoenige: "Jungschützenkönig:innen",
-  veranstaltungen: "Veranstaltungen",
-};
+export const revalidate = 300; // 5 Minuten
 
 export default async function GaleriePage() {
-  const galerien = await getAllGalerien();
+  const rawImages = await getGalleryImages("galerie", 100);
 
-  // Nach Kategorie gruppieren
-  const grouped = galerien.reduce<Record<string, typeof galerien>>((acc, g) => {
-    if (!acc[g.kategorie]) acc[g.kategorie] = [];
-    acc[g.kategorie].push(g);
-    return acc;
-  }, {});
+  const images = rawImages.map((img) => ({
+    public_id: img.public_id,
+    thumbUrl: getCloudinaryImageUrl(img.public_id, {
+      width: 560,
+      height: 420,
+      crop: "limit",
+    }),
+    fullUrl: getCloudinaryImageUrl(img.public_id, {
+      width: 1600,
+      crop: "limit",
+    }),
+    title: img.title,
+  }));
 
   return (
     <>
-      <div className="page-hero">
-        <div className="page-hero-badge">Erinnerungen & Momente</div>
-        <h1>Galerie</h1>
-        <p>Bilder aus unserer Bruderschaft – Schützenfeste, Ehrungen und besondere Momente.</p>
-      </div>
-
-      <section className="section">
+      <section className="page-hero">
         <div className="container">
-          {Object.keys(grouped).length > 0 ? (
-            Object.entries(grouped).map(([kat, items]) => (
-              <div key={kat} id={kat} style={{ marginBottom: "3.5rem" }}>
-                <h2 className="section-title">{KATEGORIE_LABELS[kat] ?? kat}</h2>
-                {items.map((galerie) => (
-                  <div key={galerie._id} style={{ marginTop: "1.5rem" }}>
-                    {galerie.jahr && (
-                      <h3 style={{ color: "var(--text-muted)", fontSize: "0.9rem",
-                        fontFamily: "Source Sans 3, sans-serif", marginBottom: "0.75rem" }}>
-                        {galerie.titel} · {galerie.jahr}
-                      </h3>
-                    )}
-                    <div className={styles.grid}>
-                      {galerie.bilder.map((bild, i) => (
-                        <div key={i} className={styles.item}>
-                          <Image
-                            src={urlFor(bild).width(600).height(450).url()}
-                            alt={bild.alt ?? galerie.titel}
-                            fill style={{ objectFit: "cover" }}
-                            sizes="(max-width: 768px) 50vw, 300px"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ))
-          ) : (
-            <p style={{ color: "var(--text-muted)" }}>
-              Noch keine Galerien vorhanden. Bilder können im{" "}
-              <a href="/studio" style={{ color: "var(--green-light)", fontWeight: 600 }}>
-                CMS unter /studio
-              </a>{" "}
-              hochgeladen werden.
+          <span className="page-hero-badge">Fotos & Erinnerungen</span>
+          <h1>Galerie</h1>
+          <p>
+            Eindrücke von Schützenfesten, König:innen und dem Leben unserer
+            Bruderschaft.
+          </p>
+        </div>
+      </section>
+
+      <section className={`section ${styles.section}`}>
+        <div className="container">
+          <div className={styles.intro}>
+            <h2 className="section-title">Bilder</h2>
+            <p>
+              Klicke auf ein Bild zur Vergrößerung. Die Bilder werden aus
+              unserem Cloudinary-Account geladen (Ordner:{" "}
+              <strong>galerie</strong>).
             </p>
+          </div>
+
+          {images.length > 0 ? (
+            <GalerieGrid images={images} />
+          ) : (
+            <div className={styles.empty}>
+              <strong>Noch keine Bilder in der Galerie</strong>
+              <p>
+                Richte in Cloudinary einen Ordner <strong>galerie</strong> ein
+                und lade dort Bilder hoch. Trage in der .env.local die Werte{" "}
+                <code>NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME</code>,{" "}
+                <code>CLOUDINARY_API_KEY</code> und{" "}
+                <code>CLOUDINARY_API_SECRET</code> ein (Cloudinary Dashboard →
+                Einstellungen → API-Keys).
+              </p>
+            </div>
           )}
         </div>
       </section>

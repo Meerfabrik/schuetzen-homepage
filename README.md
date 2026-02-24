@@ -105,11 +105,32 @@ git push -u origin main
    - `NEXT_PUBLIC_SANITY_DATASET`
    - `RESEND_API_KEY`
    - `CONTACT_EMAIL`
+   - (optional) `INSTAGRAM_ACCESS_TOKEN`, `INSTAGRAM_USER_ID`, `NEXT_PUBLIC_INSTAGRAM_PROFILE_URL` für den Instagram-Feed
 5. Deploy klicken 🎉
 
 ### Sanity CORS für Produktion freischalten
 → https://sanity.io/manage → Euer Projekt → API → CORS Origins
 → Eure Vercel-Domain hinzufügen: `https://eure-domain.vercel.app`
+
+---
+
+## 📷 Instagram-Feed (optional)
+
+Auf der Startseite wird ein Bildergitter mit Fotos von eurem Instagram-Account angezeigt. Dafür braucht ihr die **Instagram Graph API** (Meta/Facebook).
+
+### Voraussetzungen
+- Instagram-**Business-** oder **Creator-Konto**
+- Konto mit einer **Facebook-Seite** verknüpft
+- **Meta Developer App** (https://developers.facebook.com) mit „Instagram Graph API“ aktiviert
+
+### Env-Variablen in `.env.local`
+| Variable | Beschreibung |
+|----------|--------------|
+| `INSTAGRAM_ACCESS_TOKEN` | Long-lived User Access Token (von Meta Graph API Explorer oder über Token-Tool) |
+| `INSTAGRAM_USER_ID` | Instagram-Nutzer-ID (numerisch), nicht der Benutzername – z. B. über Graph API: `me/accounts` → Seite wählen → `instagram_business_account` → `id` |
+| `NEXT_PUBLIC_INSTAGRAM_PROFILE_URL` | (optional) Link zu eurem Profil, z. B. `https://www.instagram.com/eure_seite/` – wird im Fallback-Button genutzt |
+
+Ohne diese Variablen erscheint ein Platzhalter mit Link „Zu Instagram“. Mit gültigen Werten werden die letzten 12 Bilder angezeigt (Cache: 1 Stunde).
 
 ---
 

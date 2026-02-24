@@ -15,7 +15,7 @@
 }
 
 .koenigCard h2 {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Encode Sans Condensed', sans-serif;
   font-size: 1.8rem;
   color: var(--green);
   margin-bottom: 0.5rem;
@@ -61,7 +61,7 @@
 }
 
 .hofstaatName {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Encode Sans Condensed', sans-serif;
   font-weight: 700;
   color: var(--green);
   font-size: 0.9rem;

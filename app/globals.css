@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Encode+Sans+Condensed:wght@400;500;600;700;800&family=Playfair+Display:wght@400;700;900&family=Source+Sans+3:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -10,8 +10,11 @@
   --green:       #1a4a2e;
   --green-mid:   #2d6b45;
   --green-light: #3d8b5c;
-  --gold:        #c8972a;
-  --gold-light:  #e6b84a;
+  /* Orange / Akzent */
+  --gold:        rgb(252, 153, 53);
+  --gold-light:  rgb(254, 185, 120);
+  --orange:      rgb(252, 153, 53);
+  --accent:      rgb(252, 153, 53);
   --cream:       #faf6ef;
   --cream-dark:  #f0e9da;
   --text:        #1c1c1c;
@@ -35,12 +38,17 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Platz für fixen Header (68px) */
+main {
+  padding-top: 68px;
+}
+
 a { color: inherit; text-decoration: none; }
 
 img { max-width: 100%; display: block; }
 
 h1, h2, h3, h4 {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Encode Sans Condensed', sans-serif;
   line-height: 1.2;
 }
 

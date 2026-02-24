@@ -1,19 +1,48 @@
 /* ── HERO ── */
 .hero {
-  background: linear-gradient(140deg, var(--green) 0%, var(--green-mid) 65%, #3a5c30 100%);
   color: white;
-  padding: 6rem 1.5rem 5rem;
+  padding: 2.75rem 1.5rem 2.5rem;
   text-align: center;
   position: relative;
   overflow: hidden;
+  min-height: 36vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.hero::before {
+/* Hintergrundbild */
+.heroBg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.heroBgImage {
+  object-fit: cover;
+  object-position: center 50%;
+}
+
+/* Dunkler Overlay für bessere Lesbarkeit */
+.hero::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background: linear-gradient(
+    to bottom,
+    rgba(34, 62, 32, 0.75) 0%,
+    rgba(34, 62, 32, 0.6) 50%,
+    rgba(34, 62, 32, 0.85) 100%
+  );
+  z-index: 1;
   pointer-events: none;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  max-width: 640px;
+  margin: 0 auto;
 }
 
 .heroBadge {
@@ -27,16 +56,16 @@
   text-transform: uppercase;
   padding: 0.3rem 1rem;
   border-radius: 2px;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   position: relative;
 }
 
 .heroTitle {
-  font-family: 'Playfair Display', serif;
-  font-size: clamp(2rem, 5.5vw, 3.6rem);
+  font-family: 'Encode Sans Condensed', sans-serif;
+  font-size: clamp(1.75rem, 4.5vw, 3rem);
   font-weight: 900;
   line-height: 1.1;
-  margin-bottom: 1.2rem;
+  margin-bottom: 0.9rem;
   position: relative;
 }
 
@@ -50,20 +79,20 @@
 }
 
 .heroText {
-  font-size: 1.05rem;
+  font-size: 0.98rem;
   opacity: 0.82;
   max-width: 580px;
-  margin: 0 auto 2rem;
+  margin: 0 auto 1.25rem;
   font-weight: 300;
   position: relative;
-  line-height: 1.7;
+  line-height: 1.6;
 }
 
 .heroDivider {
   width: 56px;
   height: 2px;
   background: var(--gold);
-  margin: 0 auto 2rem;
+  margin: 0 auto 1.25rem;
   position: relative;
 }
 
@@ -98,7 +127,7 @@
 }
 
 .welcomeItem h3 {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Encode Sans Condensed', sans-serif;
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--gold-light);
@@ -116,10 +145,10 @@
   background: var(--cream);
 }
 
-/* Zweispaltig: News links, Facebook rechts */
+/* Zweispaltig: News links, Instagram rechts */
 .newsFacebookGrid {
   display: grid;
-  grid-template-columns: 1fr 500px;
+  grid-template-columns: 8fr 2fr;
   gap: 3rem;
   align-items: start;
 }
@@ -130,6 +159,13 @@
   gap: 1.5rem;
 }
 
+/* Rechte Spalte: Countdown oben, Facebook darunter */
+.rightColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
 /* ── CTA BAND ── */
 .ctaBand {
   background: var(--cream-dark);
@@ -138,7 +174,7 @@
 }
 
 .ctaBand h2 {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Encode Sans Condensed', sans-serif;
   font-size: clamp(1.4rem, 3vw, 1.9rem);
   color: var(--green);
   margin-bottom: 0.75rem;
@@ -153,9 +189,8 @@
 
 /* ── RESPONSIVE ── */
 @media (max-width: 1100px) {
-  /* Facebook-Spalte auf 400px verkleinern */
   .newsFacebookGrid {
-    grid-template-columns: 1fr 400px;
+    grid-template-columns: 8fr 2fr;
     gap: 2rem;
   }
 }
@@ -168,6 +203,6 @@
 }
 
 @media (max-width: 768px) {
-  .hero { padding: 4rem 1.2rem 3.5rem; }
+  .hero { padding: 2.25rem 1.2rem 2rem; }
   .welcomeGrid { grid-template-columns: 1fr; gap: 1.5rem; }
 }

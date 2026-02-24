@@ -1,7 +1,10 @@
 import Link from "next/link";
+import Image from "next/image";
 import NewsCard from "@/components/NewsCard";
-import FacebookFeed from "@/components/FacebookFeed";
+import InstagramFeed from "@/components/InstagramFeed";
+import SchuetzenfestCountdown from "@/components/SchuetzenfestCountdown";
 import { getLatestNews } from "@/lib/sanity/queries";
+import { NEXT_SCHUETZENFEST_DATE } from "@/lib/site";
 import styles from "./page.module.css";
 
 export const revalidate = 60;
@@ -18,7 +21,18 @@ export default async function HomePage() {
     <>
       {/* ── HERO ── */}
       <section className={styles.hero}>
-        <div className={styles.heroBadge}>Seit 1567 · Meerbusch-Büderich</div>
+        <div className={styles.heroBg} aria-hidden>
+          <Image
+            src="/images/hero_image_opt.jpg"
+            alt=""
+            fill
+            className={styles.heroBgImage}
+            priority
+            sizes="100vw"
+          />
+        </div>
+        <div className={styles.heroContent}>
+        {/* <div className={styles.heroBadge}>Seit 1567 · Meerbusch-Büderich</div> */}
         <h1 className={styles.heroTitle}>
           Herzlich Willkommen
           <em className={styles.heroSub}>bei den Büdericher Schützen</em>
@@ -39,28 +53,12 @@ export default async function HomePage() {
             Kontakt aufnehmen
           </Link>
         </div>
-      </section>
-
-      {/* ── WELCOME BAND ── */}
-      <section className={styles.welcomeBand}>
-        <div className="container">
-          <div className={styles.welcomeGrid}>
-            {[
-              { icon: "🏹", title: "Tradition seit 1567", text: "Eine der ältesten Schützenbruderschaften der Region, mit über 450 Jahren Geschichte." },
-              { icon: "🤝", title: "Starke Gemeinschaft", text: "Wir pflegen Freundschaft, Brauchtum und Zusammenhalt in unserer Heimat Meerbusch." },
-              { icon: "🎯", title: "Schießsport", text: "Sportliches Schießen auf höchstem Niveau – offen für Einsteiger und Fortgeschrittene." },
-            ].map((item) => (
-              <div key={item.title} className={styles.welcomeItem}>
-                <div className={styles.welcomeIcon}>{item.icon}</div>
-                <h3>{item.title}</h3>
-                <p>{item.text}</p>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
-      {/* ── NEWS + FACEBOOK ── */}
+  
+
+      {/* ── NEWS + INSTAGRAM ── */}
       <section className={`section ${styles.newsSection}`}>
         <div className="container">
           <div className={styles.newsFacebookGrid}>
@@ -86,11 +84,17 @@ export default async function HomePage() {
               )}
             </div>
 
-            {/* Facebook Feed */}
-            <div>
-              <h2 className="section-title">Wir auf Facebook</h2>
-              <p className="section-subtitle">Aktuelle Posts & Fotos</p>
-              <FacebookFeed height={600} />
+            {/* Rechts: Countdown + Instagram */}
+            <div className={styles.rightColumn}>
+              <SchuetzenfestCountdown
+                targetDate={NEXT_SCHUETZENFEST_DATE}
+                title="Nächstes Schützenfest"
+              />
+              <div>
+                <h2 className="section-title">Wir auf Instagram</h2>
+                <p className="section-subtitle">Aktuelle Fotos aus der Bruderschaft</p>
+                <InstagramFeed limit={12} />
+              </div>
             </div>
 
           </div>
@@ -108,13 +112,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      <iframe
-  src={`https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2F667738963347662&tabs=timeline&width=500&height=600&small_header=true&adapt_container_width=true&hide_cover=false&show_facepile=false`}
-  width="500"
-  height="600"
-  style={{ border: "none", overflow: "hidden" }}
-  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-/>
     </>
   );
 }

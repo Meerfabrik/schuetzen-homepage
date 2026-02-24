@@ -1,9 +1,16 @@
 .header {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
   background: var(--green);
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+  transition: box-shadow 0.25s ease;
+}
+
+.header.scrolled {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
 }
 
 .inner {
@@ -14,6 +21,11 @@
   align-items: center;
   justify-content: space-between;
   height: 68px;
+  transition: height 0.25s ease, padding 0.25s ease;
+}
+
+.header.scrolled .inner {
+  height: 52px;
 }
 
 /* ── LOGO ── */
@@ -25,13 +37,29 @@
   flex-shrink: 0;
 }
 
+.logo img {
+  transition: width 0.25s ease, height 0.25s ease;
+}
+
+.header.scrolled .logo img {
+  width: 42px !important;
+  height: 42px !important;
+}
+
 .logoText {
-  font-family: 'Playfair Display', serif;
+  font-family: 'Encode Sans Condensed', sans-serif;
   font-size: 0.85rem;
   font-weight: 700;
   color: white;
   line-height: 1.25;
-  max-width: 210px;
+  max-width: 350px;
+  text-transform: uppercase;
+  transition: font-size 0.25s ease, max-width 0.25s ease;
+}
+
+.header.scrolled .logoText {
+  font-size: 0.75rem;
+  max-width: 160px;
 }
 
 /* ── DESKTOP NAV ── */
@@ -66,8 +94,13 @@
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
-  transition: color 0.2s, background 0.2s;
+  transition: color 0.2s, background 0.2s, height 0.25s ease, font-size 0.25s ease;
   white-space: nowrap;
+}
+
+.header.scrolled .navLink {
+  height: 52px;
+  font-size: 0.76rem;
 }
 
 .navLink:hover {

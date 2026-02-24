@@ -12,6 +12,9 @@ export const metadata = {
   description:
     "Willkommen bei der St. Sebastianus Schützenbruderschaft Meerbusch-Büderich 1567 e.V. – Tradition, Gemeinschaft und Heimatliebe seit über 450 Jahren.",
   keywords: ["Schützenbruderschaft", "Büderich", "Meerbusch", "Schützenfest", "St. Sebastianus"],
+  icons: {
+    icon: "/favicon.png",
+  },
   openGraph: {
     siteName: "Schützenbruderschaft Büderich",
     locale: "de_DE",

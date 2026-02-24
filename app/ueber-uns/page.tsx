@@ -1,3 +1,5 @@
+import { getGalleryImages, getCloudinaryImageUrl, groupImagesByTag } from "@/lib/cloudinary";
+import GalerieGrid from "@/components/GalerieGrid";
 import styles from "./page.module.css";
 
 export const metadata = {
@@ -5,12 +7,14 @@ export const metadata = {
   description: "Vorstand, Kompanien und Geschichte der St. Sebastianus Schützenbruderschaft Büderich.",
 };
 
-const VORSTAND = [
-  { rolle: "Präsident", name: "N.N." },
-  { rolle: "Vizepräsident", name: "N.N." },
-  { rolle: "Schriftführer", name: "N.N." },
-  { rolle: "Kassierer", name: "N.N." },
-  { rolle: "Präses", name: "N.N." },
+export const revalidate = 300; // 5 Minuten
+
+/** Tags in Cloudinary → Zwischenüberschrift (Reihenfolge = Anzeige-Reihenfolge) */
+const VORSTAND_BILDER_GRUPPEN = [
+  { tag: "gf", heading: "Geschäftsführender Vorstand" },
+  
+  { tag: "vs", heading: "Vorstand" },
+  { tag: "ehren", heading: "Ehrenrat" },
 ];
 
 const KOMPANIEN = [
@@ -21,7 +25,26 @@ const KOMPANIEN = [
   "Jungschützen",
 ];
 
-export default function UeberUnsPage() {
+function mapToGalerieImages(images: Awaited<ReturnType<typeof getGalleryImages>>) {
+  return images.map((img) => ({
+    public_id: img.public_id,
+    thumbUrl: getCloudinaryImageUrl(img.public_id, {
+      width: 560,
+      height: 420,
+      crop: "limit",
+    }),
+    fullUrl: getCloudinaryImageUrl(img.public_id, {
+      width: 1600,
+      crop: "limit",
+    }),
+    title: img.title,
+  }));
+}
+
+export default async function UeberUnsPage() {
+  const rawImages = await getGalleryImages("vorstandbilder", 50);
+  const gruppen = groupImagesByTag(rawImages, VORSTAND_BILDER_GRUPPEN);
+
   return (
     <>
       <div className="page-hero">
@@ -32,18 +55,18 @@ export default function UeberUnsPage() {
 
       <section className="section">
         <div className="container">
-          <h2 className="section-title">Vorstand</h2>
-          <p className="section-subtitle">Die gewählten Vertreter unserer Bruderschaft</p>
-
-          <div className={styles.vorstandGrid}>
-            {VORSTAND.map((v) => (
-              <div key={v.rolle} className={styles.vorstandCard}>
-                <div className={styles.avatar}>👤</div>
-                <div className={styles.rolle}>{v.rolle}</div>
-                <div className={styles.name}>{v.name}</div>
-              </div>
-            ))}
-          </div>
+          {rawImages.length > 0 && (
+            <div style={{ marginTop: "2rem" }}>
+              <h2 className="section-title">Der Vorstand der Bruderschaft</h2>
+              <p className="section-subtitle"> </p>
+              {gruppen.map(({ heading, images }) => (
+                <div key={heading} className={styles.bilderGruppe}>
+                  <h3 className={styles.gruppenTitel}>{heading}</h3>
+                  <GalerieGrid images={mapToGalerieImages(images)} />
+                </div>
+              ))}
+            </div>
+          )}
 
           <div style={{ marginTop: "4rem" }}>
             <h2 className="section-title">Kompanien</h2>

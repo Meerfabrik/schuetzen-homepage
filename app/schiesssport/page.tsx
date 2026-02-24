@@ -33,7 +33,7 @@ export default function SchiesssportPage() {
             borderRadius: "var(--radius)",
             borderLeft: "3px solid var(--gold)"
           }}>
-            <h3 style={{ fontFamily: "Playfair Display, serif", color: "var(--green)", marginBottom: "0.5rem" }}>
+            <h3 style={{ fontFamily: "'Encode Sans Condensed', sans-serif", color: "var(--green)", marginBottom: "0.5rem" }}>
               Interesse am Schießsport?
             </h3>
             <p style={{ fontSize: "0.9rem", color: "var(--text-muted)", marginBottom: "1rem" }}>
