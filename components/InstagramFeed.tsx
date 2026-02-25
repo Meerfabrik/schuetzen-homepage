@@ -8,9 +8,17 @@ const INSTAGRAM_PROFILE_URL =
 interface InstagramFeedProps {
   /** Maximale Anzahl Bilder (Standard: 12) */
   limit?: number;
+  /** Anzahl Bilder pro Zeile: 1, 2, 3 oder 4 (Standard: 3) */
+  columnsPerRow?: 1 | 2 | 3 | 4;
+  /** Instagram-Beschreibungstexte (Captions) unter den Bildern anzeigen */
+  showCaptions?: boolean;
 }
 
-export default async function InstagramFeed({ limit = 12 }: InstagramFeedProps) {
+export default async function InstagramFeed({
+  limit = 12,
+  columnsPerRow = 3,
+  showCaptions = false,
+}: InstagramFeedProps) {
   const media = await getInstagramMedia(limit);
 
   if (media.length === 0) {
@@ -19,7 +27,7 @@ export default async function InstagramFeed({ limit = 12 }: InstagramFeedProps) 
         <div className={styles.igLogo} aria-hidden>
           📷
         </div>
-        <h3 className={styles.fallbackTitle}>Wir auf Instagram</h3>
+        <h3 className={styles.fallbackTitle}>Ein Blick in unsere SocialMedia Welt</h3>
         <p className={styles.fallbackText}>
           Folgt uns für aktuelle Fotos und Einblicke direkt aus der Bruderschaft.
         </p>
@@ -37,7 +45,11 @@ export default async function InstagramFeed({ limit = 12 }: InstagramFeedProps) 
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.grid}>
+      <div
+        className={styles.grid}
+        data-columns={columnsPerRow}
+        data-captions={showCaptions ? "true" : undefined}
+      >
         {media.map((item) => (
           <div key={item.id} className={styles.tile}>
             <a
@@ -45,6 +57,7 @@ export default async function InstagramFeed({ limit = 12 }: InstagramFeedProps) 
               target="_blank"
               rel="noopener noreferrer"
               aria-label={item.caption ? item.caption.slice(0, 80) : "Instagram-Beitrag öffnen"}
+              className={styles.tileLink}
             >
               <Image
                 src={item.media_type === "VIDEO" && item.thumbnail_url ? item.thumbnail_url : item.media_url}
@@ -54,6 +67,11 @@ export default async function InstagramFeed({ limit = 12 }: InstagramFeedProps) 
                 unoptimized
               />
             </a>
+            {showCaptions && item.caption && (
+              <p className={styles.caption} title={item.caption}>
+                {item.caption.length > 80 ? `${item.caption.slice(0, 80).trim()}…` : item.caption}
+              </p>
+            )}
           </div>
         ))}
       </div>

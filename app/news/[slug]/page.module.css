@@ -1,3 +1,20 @@
+/* Kompakter Header: nur Titel + Datum */
+.heroCompact {
+  padding: 2rem 1.5rem !important;
+}
+
+.heroCompact h1 {
+  margin-bottom: 0.35rem;
+}
+
+.heroDate {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 500;
+  opacity: 0.85;
+  letter-spacing: 0.02em;
+}
+
 .heroImg {
   position: relative;
   width: 100%;

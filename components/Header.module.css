@@ -21,11 +21,6 @@
   align-items: center;
   justify-content: space-between;
   height: 68px;
-  transition: height 0.25s ease, padding 0.25s ease;
-}
-
-.header.scrolled .inner {
-  height: 52px;
 }
 
 /* ── LOGO ── */
@@ -38,12 +33,7 @@
 }
 
 .logo img {
-  transition: width 0.25s ease, height 0.25s ease;
-}
-
-.header.scrolled .logo img {
-  width: 42px !important;
-  height: 42px !important;
+  display: block;
 }
 
 .logoText {
@@ -52,26 +42,42 @@
   font-weight: 700;
   color: white;
   line-height: 1.25;
-  max-width: 350px;
+  max-width: 325px;
   text-transform: uppercase;
-  transition: font-size 0.25s ease, max-width 0.25s ease;
-}
-
-.header.scrolled .logoText {
-  font-size: 0.75rem;
-  max-width: 160px;
 }
 
 /* ── DESKTOP NAV ── */
 .desktopNav {
   display: flex;
   align-items: center;
+  gap: 0.5rem;
 }
 
 .navList {
   list-style: none;
   display: flex;
   align-items: center;
+}
+
+.ctaBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1.25rem;
+  background: var(--gold);
+  color: var(--green);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  border-radius: 6px;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
+}
+
+.ctaBtn:hover {
+  background: var(--gold-light);
+  color: var(--green);
 }
 
 .navItem {
@@ -94,13 +100,8 @@
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.85);
   text-decoration: none;
-  transition: color 0.2s, background 0.2s, height 0.25s ease, font-size 0.25s ease;
+  transition: color 0.2s, background 0.2s;
   white-space: nowrap;
-}
-
-.header.scrolled .navLink {
-  height: 52px;
-  font-size: 0.76rem;
 }
 
 .navLink:hover {

@@ -145,18 +145,39 @@
   background: var(--cream);
 }
 
-/* Zweispaltig: News links, Instagram rechts */
+/* Eine Spalte: News oben (volle Breite), darunter Countdown + Instagram */
 .newsFacebookGrid {
   display: grid;
-  grid-template-columns: 8fr 2fr;
+  grid-template-columns: 1fr;
   gap: 3rem;
   align-items: start;
 }
 
+/* News in 3 Spalten wie im Screenshot */
 .newsGrid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
+}
+
+.newsCtaWrap {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.newsCtaBtn {
+  display: inline-block;
+  background: var(--green);
+  color: white;
+  font-weight: 600;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.newsCtaBtn:hover {
+  background: var(--green-mid);
 }
 
 /* Rechte Spalte: Countdown oben, Facebook darunter */
@@ -173,31 +194,19 @@
   padding: 4rem 1.5rem;
 }
 
-.ctaBand h2 {
-  font-family: 'Encode Sans Condensed', sans-serif;
-  font-size: clamp(1.4rem, 3vw, 1.9rem);
-  color: var(--green);
-  margin-bottom: 0.75rem;
-}
-
-.ctaBand p {
-  color: var(--text-muted);
-  max-width: 520px;
-  margin: 0 auto;
-  font-size: 0.95rem;
+.ctaBand .container {
+  text-align: center;
 }
 
 /* ── RESPONSIVE ── */
-@media (max-width: 1100px) {
-  .newsFacebookGrid {
-    grid-template-columns: 8fr 2fr;
-    gap: 2rem;
+@media (max-width: 900px) {
+  .newsGrid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (max-width: 860px) {
-  /* Untereinander stapeln */
-  .newsFacebookGrid {
+@media (max-width: 600px) {
+  .newsGrid {
     grid-template-columns: 1fr;
   }
 }

@@ -92,6 +92,9 @@ export default function Header() {
               </li>
             ))}
           </ul>
+          <Link href="/kontakt" className={styles.ctaBtn}>
+            Kontakt aufnehmen
+          </Link>
         </nav>
 
         <button

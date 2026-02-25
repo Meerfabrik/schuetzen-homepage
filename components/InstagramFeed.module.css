@@ -10,9 +10,25 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(90px, 1fr));
+  grid-template-columns: repeat(var(--ig-cols, 3), minmax(90px, 1fr));
   gap: 10px;
   padding: 10px;
+}
+
+.grid[data-columns="1"] {
+  --ig-cols: 1;
+}
+
+.grid[data-columns="2"] {
+  --ig-cols: 2;
+}
+
+.grid[data-columns="3"] {
+  --ig-cols: 3;
+}
+
+.grid[data-columns="4"] {
+  --ig-cols: 4;
 }
 
 .tile {
@@ -23,7 +39,21 @@
   background: var(--cream-dark);
 }
 
-.tile a {
+.grid[data-captions="true"] .tile {
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: auto;
+}
+
+.grid[data-captions="true"] .tile .tileLink {
+  flex: 0 0 auto;
+  aspect-ratio: 1;
+  position: relative;
+  height: auto;
+}
+
+.tile a,
+.tile .tileLink {
   display: block;
   width: 100%;
   height: 100%;
@@ -38,6 +68,20 @@
 
 .tile:hover img {
   transform: scale(1.05);
+}
+
+.caption {
+  flex: 1 1 auto;
+  margin: 0;
+  padding: 6px 8px;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--text-muted);
+  background: var(--cream-dark);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 /* ── FALLBACK (kein Token / API-Fehler) ── */
@@ -107,5 +151,8 @@
   }
   .grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .grid[data-columns="1"] {
+    grid-template-columns: 1fr;
   }
 }

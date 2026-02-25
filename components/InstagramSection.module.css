@@ -1,0 +1,293 @@
+/* Section – weißer Hintergrund, wie im Screenshot */
+.section {
+  padding: 4rem 0 5rem;
+  background: white;
+}
+
+.inner {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Header: Badge + Titel + Untertitel */
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, rgba(26, 74, 46, 0.12) 0%, rgba(252, 153, 53, 0.15) 100%);
+  border-radius: 9999px;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(26, 74, 46, 0.2);
+}
+
+.badgeIcon {
+  color: var(--green);
+  flex-shrink: 0;
+}
+
+.badgeText {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--green);
+}
+
+.title {
+  font-family: 'Encode Sans Condensed', sans-serif;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 1rem;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-size: 1.125rem;
+  color: var(--text-muted);
+  max-width: 36rem;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Grid: 3 Spalten, 2 Reihen */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Einzelner Post */
+.tile {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+
+.tileLink {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.tileImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.tile:hover .tileImg {
+  transform: scale(1.1);
+}
+
+/* Overlay beim Hover */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  text-align: center;
+  color: white;
+}
+
+.tile:hover .overlay {
+  opacity: 1;
+}
+
+.stats {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.statIcon {
+  flex-shrink: 0;
+}
+
+.captionText {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.viewBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: white;
+  color: var(--text);
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.viewBtn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.igCorner {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 2rem;
+  height: 2rem;
+  background: rgba(255,255,255,0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tile:hover .igCorner {
+  opacity: 1;
+}
+
+.igCornerIcon {
+  color: var(--green);
+}
+
+/* CTA-Buttons unter dem Grid */
+.ctaWrap {
+  text-align: center;
+  margin-top: 3rem;
+}
+
+.ctaBtnRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.ctaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  color: var(--green);
+  padding: 0.6rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  border: 2px solid var(--gold);
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.ctaBtn:hover {
+  color: var(--green);
+  border-color: var(--green);
+  background: rgba(26, 74, 46, 0.06);
+}
+
+.ctaBtn:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* Fallback wenn keine Posts */
+.fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 3rem 2rem;
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  text-align: center;
+  border-top: 3px solid var(--gold);
+}
+
+.fallbackIcon {
+  color: white;
+  flex-shrink: 0;
+}
+
+.fallbackTitle {
+  font-family: 'Encode Sans Condensed', sans-serif;
+  font-size: 1.5rem;
+  color: var(--green);
+  margin: 0;
+}
+
+.fallbackText {
+  color: var(--text-muted);
+  font-size: 1rem;
+  max-width: 400px;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.fallbackBtnRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.fallbackBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  background: transparent;
+  color: var(--green);
+  border: 2px solid var(--gold);
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: color 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.fallbackBtn:hover {
+  border-color: var(--green);
+  background: rgba(26, 74, 46, 0.06);
+}

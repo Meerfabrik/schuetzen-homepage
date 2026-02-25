@@ -39,10 +39,9 @@ export default async function NewsDetailPage({ params }: Props) {
         </div>
       )}
 
-      <div className="page-hero" style={{ paddingTop: imageUrl ? "2rem" : undefined }}>
-        <div className="page-hero-badge">{formattedDate}</div>
+      <div className={`page-hero ${styles.heroCompact}`} style={{ paddingTop: imageUrl ? "1.5rem" : undefined }}>
         <h1>{article.title}</h1>
-        <p>{article.excerpt}</p>
+        <time className={styles.heroDate} dateTime={article.date}>{formattedDate}</time>
       </div>
 
       <article className="section">

@@ -1,0 +1,22 @@
+/* ── Alle Beiträge: gleicher Look wie Startseite-News ── */
+.newsSection {
+  background: var(--cream);
+}
+
+.newsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .newsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .newsGrid {
+    grid-template-columns: 1fr;
+  }
+}

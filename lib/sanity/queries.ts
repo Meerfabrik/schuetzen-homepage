@@ -10,7 +10,7 @@ import type {
 
 export async function getAllNews(): Promise<SanityNews[]> {
   return client.fetch(
-    `*[_type == "news"] | order(date desc) {
+    `*[_type == "news" && defined(slug.current)] | order(date desc) {
       _id,
       title,
       slug,

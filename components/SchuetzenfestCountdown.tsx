@@ -8,6 +8,8 @@ interface SchuetzenfestCountdownProps {
   targetDate: string;
   /** Optional: Titel über dem Countdown */
   title?: string;
+  /** "glass" = transparenter Hintergrund für Einsatz in Hero/Glas-Box */
+  variant?: "default" | "glass";
 }
 
 interface TimeLeft {
@@ -38,6 +40,7 @@ function formatNum(n: number): string {
 export default function SchuetzenfestCountdown({
   targetDate,
   title = "Nächstes Schützenfest",
+  variant = "default",
 }: SchuetzenfestCountdownProps) {
   const [mounted, setMounted] = useState(false);
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
@@ -70,7 +73,7 @@ export default function SchuetzenfestCountdown({
     : "–";
 
   return (
-    <div className={styles.wrapper}>
+    <div className={`${styles.wrapper} ${variant === "glass" ? styles.wrapperGlass : ""}`}>
       <h2 className={styles.title}>{title}</h2>
       <p className={styles.subtitle}>{formattedDate}</p>
       {!mounted ? (

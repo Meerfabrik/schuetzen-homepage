@@ -1,0 +1,78 @@
+/* Abschnitt */
+.section {
+  margin-top: 2.5rem;
+}
+
+.section:first-of-type {
+  margin-top: 0;
+}
+
+/* Überschrift: optional mit grünem Akzentstrich */
+.heading {
+  font-family: "Encode Sans Condensed", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--green);
+  margin: 0 0 1rem;
+  padding-bottom: 0.35rem;
+}
+
+.headingAccent {
+  border-left: 4px solid var(--gold);
+  padding-left: 0.75rem;
+}
+
+/* Grid: 2 Spalten für GF, 3 für VS – einheitlich responsive */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+@media (min-width: 900px) {
+  .grid {
+    gap: 2rem;
+  }
+}
+
+/* Karte */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+/* Bildbereich: quadratisch, abgerundet oben */
+.imageWrap {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--cream-dark);
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+/* Text unter dem Bild */
+.body {
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+.name {
+  font-family: "Encode Sans Condensed", sans-serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--green);
+  margin: 0;
+  line-height: 1.2;
+}

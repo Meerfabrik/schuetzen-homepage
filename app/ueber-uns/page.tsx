@@ -1,5 +1,6 @@
 import { getGalleryImages, getCloudinaryImageUrl, groupImagesByTag } from "@/lib/cloudinary";
-import GalerieGrid from "@/components/GalerieGrid";
+import VorstandCards from "@/components/VorstandCards";
+import { SectionTitleFadeIn } from "@/components/SectionTitleFadeIn";
 import styles from "./page.module.css";
 
 export const metadata = {
@@ -11,10 +12,9 @@ export const revalidate = 300; // 5 Minuten
 
 /** Tags in Cloudinary → Zwischenüberschrift (Reihenfolge = Anzeige-Reihenfolge) */
 const VORSTAND_BILDER_GRUPPEN = [
-  { tag: "gf", heading: "Geschäftsführender Vorstand" },
-  
-  { tag: "vs", heading: "Vorstand" },
-  { tag: "ehren", heading: "Ehrenrat" },
+  { tag: "gf", heading: "Geschäftsführender Vorstand", showAccentLine: true },
+  { tag: "vs", heading: "Vorstand", showAccentLine: true },
+  { tag: "ehren", heading: "Ehrenrat", showAccentLine: true },
 ];
 
 const KOMPANIEN = [
@@ -25,13 +25,13 @@ const KOMPANIEN = [
   "Jungschützen",
 ];
 
-function mapToGalerieImages(images: Awaited<ReturnType<typeof getGalleryImages>>) {
+function mapToVorstandImages(images: Awaited<ReturnType<typeof getGalleryImages>>) {
   return images.map((img) => ({
     public_id: img.public_id,
     thumbUrl: getCloudinaryImageUrl(img.public_id, {
       width: 560,
-      height: 420,
-      crop: "limit",
+      height: 560,
+      crop: "fill",
     }),
     fullUrl: getCloudinaryImageUrl(img.public_id, {
       width: 1600,
@@ -57,20 +57,31 @@ export default async function UeberUnsPage() {
         <div className="container">
           {rawImages.length > 0 && (
             <div style={{ marginTop: "2rem" }}>
-              <h2 className="section-title">Der Vorstand der Bruderschaft</h2>
-              <p className="section-subtitle"> </p>
-              {gruppen.map(({ heading, images }) => (
-                <div key={heading} className={styles.bilderGruppe}>
-                  <h3 className={styles.gruppenTitel}>{heading}</h3>
-                  <GalerieGrid images={mapToGalerieImages(images)} />
-                </div>
-              ))}
+              <SectionTitleFadeIn
+                title="Der Vorstand der Bruderschaft"
+                subtitle="Vorstand und Ehrenrat unserer Bruderschaft"
+              />
+              {gruppen
+                .filter((g) => g.images.length > 0 && g.heading !== "Weitere")
+                .map(({ heading, images }) => {
+                  const config = VORSTAND_BILDER_GRUPPEN.find((c) => c.heading === heading);
+                  return (
+                    <VorstandCards
+                      key={heading}
+                      heading={heading}
+                      images={mapToVorstandImages(images)}
+                      showAccentLine={config?.showAccentLine ?? true}
+                    />
+                  );
+                })}
             </div>
           )}
 
           <div style={{ marginTop: "4rem" }}>
-            <h2 className="section-title">Kompanien</h2>
-            <p className="section-subtitle">Unsere aktiven Kompanien</p>
+            <SectionTitleFadeIn
+              title="Kompanien"
+              subtitle="Unsere aktiven Kompanien"
+            />
             <div className={styles.kompanienGrid}>
               {KOMPANIEN.map((k) => (
                 <div key={k} className={styles.kompanie}>
