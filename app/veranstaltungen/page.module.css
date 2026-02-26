@@ -1,0 +1,25 @@
+.section {
+  background: var(--cream);
+}
+
+.empty {
+  background: white;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 3rem 2rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.empty p + p {
+  margin-top: 0.5rem;
+}
+
+.studioLink {
+  color: var(--green-light);
+  font-weight: 600;
+}
+
+.studioLink:hover {
+  text-decoration: underline;
+}

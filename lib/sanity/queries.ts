@@ -4,6 +4,7 @@ import type {
   SanityHofstaat,
   SanityGalerie,
   SanityDownload,
+  Appointments,
 } from "./types";
 
 // ── NEWS ─────────────────────────────────────────────────────────────────────
@@ -95,6 +96,39 @@ export async function getGalerieByKategorie(
       bilder[] { ..., asset-> }
     }`,
     { kategorie }
+  );
+}
+
+// ── TERMINE (APPOINTMENTS) ───────────────────────────────────────────────────
+
+const appointmentsProjection = `{
+      _id,
+      title,
+      startDate,
+      endDate,
+      location,
+      description,
+      image { ..., asset-> },
+      link,
+      isActive,
+      isPublished,
+      isDeleted
+    }`;
+
+export async function getAllAppointments(): Promise<Appointments[]> {
+  return client.fetch(
+    `*[_type == "appointments" && isActive == true && isPublished == true && isDeleted != true] | order(startDate asc) ${appointmentsProjection}`
+  );
+}
+
+/** Nächste Termine für Startseite: kein Enddatum oder Enddatum >= heute. */
+export async function getUpcomingAppointments(
+  limit = 6
+): Promise<Appointments[]> {
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  return client.fetch(
+    `*[_type == "appointments" && isActive == true && isPublished == true && isDeleted != true && (!defined(endDate) || endDate >= $today)] | order(startDate asc) [0...$limit] ${appointmentsProjection}`,
+    { limit, today }
   );
 }
 

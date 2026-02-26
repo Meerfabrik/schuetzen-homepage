@@ -15,6 +15,9 @@ export default defineConfig({
   projectId,
   dataset,
 
+  /** Pfad, unter dem das Studio in der Next.js-App läuft – verhindert "Tool not found studio". */
+  basePath: "/studio",
+
   plugins: [
     structureTool({
       structure: (S) =>
@@ -37,6 +40,10 @@ export default defineConfig({
               .title("📄 Downloads")
               .schemaType("download")
               .child(S.documentTypeList("download").title("Alle Downloads")),
+            S.listItem()
+              .title("📅 Termine")
+              .schemaType("appointments")
+              .child(S.documentTypeList("appointments").title("Alle Termine")),
           ]),
     }),
     visionTool(), // Zum Testen von GROQ-Queries im Studio

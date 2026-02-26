@@ -1,10 +1,11 @@
 import Link from "next/link";
 import NewsCard from "@/components/NewsCard";
+import AppointmentCard from "@/components/AppointmentCard";
 import { HeroSection } from "@/components/HeroSection";
 import { MotionFadeIn, StaggerGrid } from "@/components/AnimatedNewsSection";
 import { InstagramSection } from "@/components/InstagramSection";
 import SchuetzenfestCountdown from "@/components/SchuetzenfestCountdown";
-import { getLatestNews } from "@/lib/sanity/queries";
+import { getLatestNews, getUpcomingAppointments } from "@/lib/sanity/queries";
 import { getInstagramMedia } from "@/lib/instagram";
 import { NEXT_SCHUETZENFEST_DATE } from "@/lib/site";
 import styles from "./page.module.css";
@@ -17,8 +18,9 @@ export const metadata = {
 };
 
 export default async function HomePage() {
-  const [news, instagramPosts] = await Promise.all([
+  const [news, upcomingAppointments, instagramPosts] = await Promise.all([
     getLatestNews(3),
+    getUpcomingAppointments(5),
     getInstagramMedia(6),
   ]);
 
@@ -79,9 +81,60 @@ export default async function HomePage() {
         </div>
       </section>
 
+
+
       {/* ── INSTAGRAM (Design wie Screenshot) ── */}
       <InstagramSection posts={instagramPosts} />
 
+                    {/* ── TERMINE ── */}
+      <section id="termine" className={`section ${styles.newsSection}`}>
+        <div className="container">
+          <div className={styles.termineWrap}>
+            <div>
+              <MotionFadeIn>
+                <h2 className={`section-title ${styles.sectionTitleTermine}`}>Termine & Veranstaltungen</h2>
+                <p className={`section-subtitle ${styles.sectionSubtitleTermine}`}>
+                  Kommende Events und Anlässe der Bruderschaft
+                </p>
+              </MotionFadeIn>
+              {upcomingAppointments.length > 0 ? (
+                <>
+                  <StaggerGrid className={styles.appointmentsList}>
+                    {upcomingAppointments.map((appointment) => (
+                      <AppointmentCard
+                        key={appointment._id}
+                        appointment={appointment}
+                        variant="list"
+                      />
+                    ))}
+                  </StaggerGrid>
+                  <MotionFadeIn delay={0.2}>
+                    <div className={styles.newsCtaWrap}>
+                      <Link href="/veranstaltungen" className={styles.newsCtaBtn}>
+                        Alle Veranstaltungen →
+                      </Link>
+                    </div>
+                  </MotionFadeIn>
+                </>
+              ) : (
+                <MotionFadeIn>
+                  <p style={{ color: "var(--text-muted)" }}>
+                    Derzeit sind keine Termine eingetragen. Neue Termine können
+                    im{" "}
+                    <Link
+                      href="/studio"
+                      style={{ color: "var(--green-light)", fontWeight: 600 }}
+                    >
+                      CMS unter /studio
+                    </Link>{" "}
+                    angelegt werden.
+                  </p>
+                </MotionFadeIn>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
 
     </>
   );

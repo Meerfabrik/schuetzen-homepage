@@ -154,10 +154,34 @@
 }
 
 /* News in 3 Spalten wie im Screenshot */
-.newsGrid {
+.newsGrid,
+.appointmentsGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
+}
+
+/* Termine-Bereich: schmalerer Container, weniger Whitespace */
+.termineWrap {
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.termineWrap .sectionTitleTermine {
+  font-size: clamp(1.85rem, 4vw, 2.35rem);
+}
+
+.termineWrap .sectionSubtitleTermine {
+  font-size: 1.05rem;
+  margin-bottom: 2rem;
+}
+
+/* Termine als vertikale Liste (eine Zeile pro Termin) */
+.appointmentsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .newsCtaWrap {
@@ -200,13 +224,15 @@
 
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
-  .newsGrid {
+  .newsGrid,
+  .appointmentsGrid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 600px) {
-  .newsGrid {
+  .newsGrid,
+  .appointmentsGrid {
     grid-template-columns: 1fr;
   }
 }

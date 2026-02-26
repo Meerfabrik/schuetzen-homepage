@@ -1,0 +1,221 @@
+/* An NewsCard angelehnt für einheitliches Erscheinungsbild */
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  color: inherit;
+  transition: transform 0.25s, box-shadow 0.25s;
+  text-decoration: none;
+}
+
+/* Listen-Variant: eine Zeile pro Termin, Bild links breiter, Text rechts kompakt */
+.card.list {
+  flex-direction: row;
+  align-items: stretch;
+  min-height: 130px;
+}
+
+.card.list .imgWrap {
+  width: 280px;
+  min-width: 280px;
+  height: auto;
+  min-height: 130px;
+}
+
+.card.list .body {
+  flex: 1;
+  min-width: 0;
+  justify-content: center;
+  padding: 1rem 1.25rem 1rem 1.5rem;
+}
+
+.card.list .date {
+  font-size: 0.85rem;
+  margin-bottom: 0.35rem;
+}
+
+.card.list .title {
+  font-size: 1.28rem;
+  margin-bottom: 0.35rem;
+}
+
+.card.list .location {
+  font-size: 0.8rem;
+  margin-bottom: 0.25rem;
+}
+
+.card.list .excerpt {
+  font-size: 0.8rem;
+  -webkit-line-clamp: 1;
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+}
+
+.card.list .readMore {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+}
+
+/* CTA rechts in der Listen-Ansicht */
+.card.list .ctaWrap {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-left: 1px solid var(--cream-dark);
+}
+
+.card.list .ctaBtn {
+  display: inline-block;
+  background: var(--gold);
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: var(--radius);
+  white-space: nowrap;
+  transition: background 0.2s, filter 0.2s;
+}
+
+a.card.list:hover .ctaBtn {
+  filter: brightness(0.92);
+}
+
+a.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+a.card.list:hover {
+  transform: none;
+  box-shadow: var(--shadow-lg);
+}
+
+.badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 2;
+  background: var(--green);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35rem 0.9rem;
+  border-radius: 9999px;
+}
+
+.imgWrap {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  background: var(--cream-dark);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--green) 0%, var(--green-mid) 100%);
+  font-size: 2.5rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  padding: 1.35rem 1.5rem 1.75rem;
+  flex: 1;
+}
+
+.date {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+}
+
+.calendarIcon,
+.pinIcon {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.title {
+  font-family: "Encode Sans Condensed", sans-serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.location {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-bottom: 0.6rem;
+}
+
+.excerpt {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.readMore {
+  display: inline-block;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--gold);
+  transition: color 0.2s;
+}
+
+a.card:hover .readMore {
+  color: var(--green);
+}
+
+a.card.list:hover .readMore {
+  color: var(--green);
+}
+
+@media (max-width: 640px) {
+  .card.list {
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .card.list .imgWrap {
+    width: 100%;
+    min-width: 0;
+    height: 140px;
+    min-height: 140px;
+  }
+
+  .card.list .body {
+    padding: 0.75rem 1rem;
+  }
+
+  .card.list .ctaWrap {
+    border-left: none;
+    border-top: 1px solid var(--cream-dark);
+    justify-content: center;
+    padding: 0.75rem 1rem;
+  }
+}

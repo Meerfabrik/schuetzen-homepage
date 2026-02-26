@@ -20,6 +20,20 @@ export interface SanityNews {
   content: PortableTextBlock[];
 }
 
+export interface Appointments {
+  _id: string;
+  title: string;
+  startDate: string; // ISO datetime
+  endDate?: string;  // optional, ISO datetime
+  location: string;
+  description: string;
+  image: SanityImage;
+  link: string;
+  isActive: boolean;
+  isPublished: boolean;
+  isDeleted: boolean;
+}
+
 // Hofstaat
 export interface HofstaatMitglied {
   rolle: string;
