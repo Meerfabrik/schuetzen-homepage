@@ -8,6 +8,7 @@ import SchuetzenfestCountdown from "@/components/SchuetzenfestCountdown";
 import { getLatestNews, getUpcomingAppointments } from "@/lib/sanity/queries";
 import { getInstagramMedia } from "@/lib/instagram";
 import { NEXT_SCHUETZENFEST_DATE } from "@/lib/site";
+import { getGalleryImages, getCloudinaryImageUrl } from "@/lib/cloudinary";
 import styles from "./page.module.css";
 
 export const revalidate = 60;
@@ -18,17 +19,26 @@ export const metadata = {
 };
 
 export default async function HomePage() {
-  const [news, upcomingAppointments, instagramPosts] = await Promise.all([
+  const [news, upcomingAppointments, instagramPosts, heroRawImages] = await Promise.all([
     getLatestNews(3),
     getUpcomingAppointments(5),
     getInstagramMedia(6),
+    getGalleryImages("hero", 5), // Weniger Bilder = weniger Ladezeit, 5 reicht für Slider
   ]);
+
+  const heroImages = heroRawImages.map((img) =>
+    getCloudinaryImageUrl(img.public_id, {
+      width: 1920, // Ausreichend für Full-HD, spart Datenvolumen
+      crop: "fill",
+    })
+  );
 
   return (
     <>
       {/* ── HERO: Vollbild, Glas-Header, Parallax & Scroll-Animation ── */}
       <HeroSection
-        imageSrc="/images/hero_image_opt.jpg"
+        imageSrc={heroImages[0] ?? "/images/hero_image_opt.jpg"}
+        imageSrcs={heroImages.length > 0 ? heroImages : undefined}
         title="Herzlich Willkommen"
         subtitle="bei den Büdericher Schützen"
         infoText="Wir sind ein Teil der St. Sebastianus-Schützenbruderschaft in Deutschland, Büderich 1567 e.V. Tradition, Gemeinschaft und Freude – das ist unser Motto!"

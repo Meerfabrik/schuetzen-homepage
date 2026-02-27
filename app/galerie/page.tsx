@@ -42,15 +42,7 @@ export default async function GaleriePage() {
 
       <section className={`section ${styles.section}`}>
         <div className="container">
-          <div className={styles.intro}>
-            <h2 className="section-title">Bilder</h2>
-            <p>
-              Klicke auf ein Bild zur Vergrößerung. Die Bilder werden aus
-              unserem Cloudinary-Account geladen (Ordner:{" "}
-              <strong>galerie</strong>).
-            </p>
-          </div>
-
+          
           {images.length > 0 ? (
             <GalerieGrid images={images} />
           ) : (

@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   z-index: 100;
-  background: var(--green);
+  background: #144827;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
   transition: box-shadow 0.25s ease;
 }
