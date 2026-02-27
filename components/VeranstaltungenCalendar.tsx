@@ -51,7 +51,8 @@ export default function VeranstaltungenCalendar({
   appointments,
 }: VeranstaltungenCalendarProps) {
   const [date, setDate] = useState(() => new Date());
-  const [view, setView] = useState<View>("month");
+  // Standard-Ansicht: Agenda, nicht Monat
+  const [view, setView] = useState<View>("agenda");
 
   const onNavigate = useCallback((newDate: Date) => {
     setDate(newDate);
@@ -80,7 +81,7 @@ export default function VeranstaltungenCalendar({
         view={view}
         onView={onView}
         views={{ month: true, agenda: CustomAgendaList } as any}
-        components={{ toolbar: CalendarToolbar }}
+        components={{ toolbar: CalendarToolbar as any }}
         className={styles.calendar}
         messages={{
           today: "Heute",

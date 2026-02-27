@@ -15,10 +15,10 @@ const ChevronRight = () => (
 type CalendarToolbarProps = {
   label: string;
   view: string;
-  views: string[];
+  views: string[] | Record<string, boolean | unknown>;
   onNavigate: (action: string) => void;
   onView: (view: string) => void;
-  localizer: { messages: Record<string, string> };
+  localizer: { messages?: Record<string, string> };
 };
 
 export default function CalendarToolbar({
@@ -30,6 +30,9 @@ export default function CalendarToolbar({
   localizer,
 }: CalendarToolbarProps) {
   const messages = localizer.messages ?? {};
+  const viewNames = Array.isArray(views)
+    ? views
+    : Object.keys(views).filter((k) => views[k]);
   const viewLabels: Record<string, string> = {
     month: "Monat",
     agenda: "Agenda",
@@ -57,7 +60,7 @@ export default function CalendarToolbar({
       </span>
       <span className="rbc-toolbar-label">{label}</span>
       <span className="rbc-btn-group">
-        {views.map((name) => (
+        {viewNames.map((name) => (
           <button
             type="button"
             key={name}

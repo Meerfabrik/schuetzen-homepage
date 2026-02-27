@@ -30,6 +30,7 @@
   gap: 0.75rem;
   text-decoration: none;
   flex-shrink: 0;
+  min-width: 0;
 }
 
 .logo img {
@@ -256,5 +257,29 @@
 /* ── RESPONSIVE ── */
 @media (max-width: 960px) {
   .desktopNav { display: none; }
-  .hamburger { display: flex; }
+  .hamburger { display: flex; flex-shrink: 0; }
+  .logo {
+    flex-shrink: 1;
+    min-width: 0;
+    gap: 0.5rem;
+  }
+  .logoText {
+    font-size: 0.65rem;
+    max-width: 140px;
+    line-height: 1.2;
+  }
+  .logo img {
+    width: 36px;
+    height: auto;
+  }
+}
+
+@media (max-width: 400px) {
+  .logoText {
+    font-size: 0.58rem;
+    max-width: 110px;
+  }
+  .logo img {
+    width: 32px;
+  }
 }
