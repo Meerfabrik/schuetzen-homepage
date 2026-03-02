@@ -35,7 +35,7 @@ export const hofstaatSchema = defineType({
       title: "Kategorie",
       type: "string",
       options: {
-        list: KATEGORIEN,
+        list: [...KATEGORIEN],
         layout: "dropdown",
       },
       validation: (Rule) => Rule.required(),
