@@ -30,8 +30,8 @@ export default defineConfig({
               .child(S.documentTypeList("news").title("Alle Beiträge")),
             S.listItem()
               .title("👑 Aktueller Hofstaat")
-              .schemaType("hofstaat")
-              .child(S.documentTypeList("hofstaat").title("Hofstaat")),
+              .schemaType("hofstaatEintrag")
+              .child(S.documentTypeList("hofstaatEintrag").title("Hofstaat-Einträge")),
             S.listItem()
               .title("🖼️ Galerie")
               .schemaType("galerie")
@@ -44,6 +44,10 @@ export default defineConfig({
               .title("📅 Termine")
               .schemaType("appointments")
               .child(S.documentTypeList("appointments").title("Alle Termine")),
+            S.listItem()
+              .title("🤝 Sponsoren")
+              .schemaType("sponsor")
+              .child(S.documentTypeList("sponsor").title("Alle Sponsoren")),
           ]),
     }),
     visionTool(), // Zum Testen von GROQ-Queries im Studio

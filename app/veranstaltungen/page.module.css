@@ -2,6 +2,13 @@
   background: var(--cream);
 }
 
+/* Termin-Liste schmaler zentriert, wie auf der Startseite */
+.agendaWrap {
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .empty {
   background: white;
   border-radius: var(--radius);

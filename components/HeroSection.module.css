@@ -8,6 +8,7 @@
   padding-bottom: 8rem;
   overflow: hidden;
   color: white;
+  border-radius: 0 0 2rem 2rem;
 }
 
 .heroBg {
@@ -76,6 +77,12 @@
 @keyframes scrollHintBounce {
   0%, 100% { transform: translateX(-50%) translateY(0); }
   50% { transform: translateX(-50%) translateY(6px); }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    border-radius: 0 0 1rem 1rem;
+  }
 }
 
 /* Countdown in der Glas-Box: oben, minimaler Abstand darunter */

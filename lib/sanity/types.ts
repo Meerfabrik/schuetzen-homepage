@@ -35,19 +35,20 @@ export interface Appointments {
 }
 
 // Hofstaat
-export interface HofstaatMitglied {
-  rolle: string;
-  name: string;
-  bild?: SanityImage;
-}
+export type HofstaatKategorie =
+  | "koenigspaare"
+  | "minister"
+  | "ehrendamen"
+  | "gesamtbild"
+  | "jungkoenigin"
+  | "ehrenkoenigin"
+  | "ministerJungKoenigin";
 
-export interface SanityHofstaat {
+export interface HofstaatEintrag {
   _id: string;
-  regentschaftsjahr: string;
-  koenigName: string;
-  koeniginName?: string;
-  koenigBild?: SanityImage;
-  hofstaatMitglieder: HofstaatMitglied[];
+  bild: SanityImage;
+  titel: string;
+  kategorie: HofstaatKategorie;
 }
 
 // Galerie
@@ -66,5 +67,17 @@ export interface SanityDownload {
   beschreibung?: string;
   kategorie: "mitgliedschaft" | "satzung" | "veranstaltungen" | "sonstiges";
   datei: { asset: { url: string } };
+  reihenfolge?: number;
+}
+
+// Sponsor
+export type SponsorEbene = "hauptsponsor" | "sponsor" | "partner" | "foerderer";
+
+export interface SanitySponsor {
+  _id: string;
+  title: string;
+  logo: SanityImage;
+  link?: string;
+  ebene: SponsorEbene;
   reihenfolge?: number;
 }

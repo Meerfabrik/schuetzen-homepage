@@ -41,36 +41,57 @@ const PinIcon = () => (
   </svg>
 );
 
+const ClockIcon = () => (
+  <svg
+    className={styles.clockIcon}
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden
+  >
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" />
+  </svg>
+);
+
 interface AppointmentCardProps {
   appointment: Appointments;
   /** "list" = eine Zeile pro Termin (Bild links, Text rechts), "card" = Kachel wie bisher. */
   variant?: "card" | "list";
 }
 
-function formatDateRange(startDate: string, endDate?: string | null): string {
+const dateOpts: Intl.DateTimeFormatOptions = {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+};
+const timeOpts: Intl.DateTimeFormatOptions = {
+  hour: "2-digit",
+  minute: "2-digit",
+};
+
+function formatDate(startDate: string): string {
+  return new Date(startDate).toLocaleDateString("de-DE", dateOpts);
+}
+
+function formatTimeRange(startDate: string, endDate?: string | null): string {
   const start = new Date(startDate);
-  const dateOpts: Intl.DateTimeFormatOptions = {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  };
-  const timeOpts: Intl.DateTimeFormatOptions = {
-    hour: "2-digit",
-    minute: "2-digit",
-  };
-  const startDateStr = start.toLocaleDateString("de-DE", dateOpts);
   const startTimeStr = start.toLocaleTimeString("de-DE", timeOpts);
   if (!endDate?.trim()) {
-    return `${startDateStr}, ${startTimeStr} Uhr`;
+    return `${startTimeStr} Uhr`;
   }
   const end = new Date(endDate);
-  const endDateStr = end.toLocaleDateString("de-DE", dateOpts);
   const endTimeStr = end.toLocaleTimeString("de-DE", timeOpts);
-  const sameDay = startDateStr === endDateStr;
+  const sameDay = formatDate(startDate) === formatDate(endDate);
   if (sameDay) {
-    return `${startDateStr}, ${startTimeStr} – ${endTimeStr} Uhr`;
+    return `${startTimeStr} – ${endTimeStr} Uhr`;
   }
-  return `${startDateStr}, ${startTimeStr} Uhr – ${endDateStr}, ${endTimeStr} Uhr`;
+  return `${startTimeStr} Uhr – ${end.toLocaleDateString("de-DE", dateOpts)}, ${endTimeStr} Uhr`;
 }
 
 export default function AppointmentCard({
@@ -80,10 +101,6 @@ export default function AppointmentCard({
   const imageUrl =
     appointment.image &&
     urlFor(appointment.image).width(800).height(450).url();
-  const dateRange = formatDateRange(
-    appointment.startDate,
-    appointment.endDate ?? null
-  );
   const hasLink = appointment.link?.trim();
 
   const content = (
@@ -103,22 +120,26 @@ export default function AppointmentCard({
         )}
       </div>
       <div className={styles.body}>
+        <h3 className={styles.title}>{appointment.title}</h3>
         <span className={styles.date}>
           <CalendarIcon />
-          {dateRange}
+          {formatDate(appointment.startDate)}
         </span>
-        <h3 className={styles.title}>{appointment.title}</h3>
-        {appointment.description && (
-          <p className={styles.excerpt}>
-            {appointment.description.slice(0, 120)}
-            {appointment.description.length > 120 ? "…" : ""}
-          </p>
-        )}
+        <span className={styles.time}>
+          <ClockIcon />
+          {formatTimeRange(appointment.startDate, appointment.endDate ?? null)}
+        </span>
         {appointment.location && (
           <span className={styles.location}>
             <PinIcon />
             {appointment.location}
           </span>
+        )}
+        {appointment.description && (
+          <p className={styles.excerpt}>
+            {appointment.description.slice(0, 120)}
+            {appointment.description.length > 120 ? "…" : ""}
+          </p>
         )}
         {hasLink && variant !== "list" && (
           <span className={styles.readMore}>Mehr erfahren →</span>
@@ -126,7 +147,14 @@ export default function AppointmentCard({
       </div>
       {variant === "list" && hasLink && (
         <div className={styles.ctaWrap}>
-          <span className={styles.ctaBtn}>Mehr erfahren →</span>
+          <a
+            href={appointment.link!}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.ctaBtn}
+          >
+            Mehr erfahren →
+          </a>
         </div>
       )}
     </>
@@ -134,7 +162,7 @@ export default function AppointmentCard({
 
   const className = `${styles.card} ${variant === "list" ? styles.list : ""}`.trim();
 
-  if (hasLink) {
+  if (hasLink && variant !== "list") {
     return (
       <a
         href={appointment.link!}

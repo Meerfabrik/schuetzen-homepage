@@ -143,6 +143,8 @@
 /* ── NEWS + FACEBOOK ── */
 .newsSection {
   background: var(--cream);
+  margin: 0 1rem;
+  border-radius: 0 0 1.5rem 1.5rem;
 }
 
 /* Eine Spalte: News oben (volle Breite), darunter Countdown + Instagram */
@@ -240,4 +242,8 @@
 @media (max-width: 768px) {
   .hero { padding: 2.25rem 1.2rem 2rem; }
   .welcomeGrid { grid-template-columns: 1fr; gap: 1.5rem; }
+  .newsSection {
+    margin: 0 0.75rem;
+    border-radius: 0 0 1rem 1rem;
+  }
 }

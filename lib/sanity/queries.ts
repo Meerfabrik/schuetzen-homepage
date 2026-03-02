@@ -1,10 +1,11 @@
 import { client } from "./client";
 import type {
   SanityNews,
-  SanityHofstaat,
   SanityGalerie,
   SanityDownload,
   Appointments,
+  SanitySponsor,
+  HofstaatEintrag,
 } from "./types";
 
 // ── NEWS ─────────────────────────────────────────────────────────────────────
@@ -53,19 +54,13 @@ export async function getLatestNews(count = 3): Promise<SanityNews[]> {
 
 // ── HOFSTAAT ─────────────────────────────────────────────────────────────────
 
-export async function getAktuellerHofstaat(): Promise<SanityHofstaat | null> {
+export async function getHofstaatEintraege(): Promise<HofstaatEintrag[]> {
   return client.fetch(
-    `*[_type == "hofstaat"] | order(_createdAt desc) [0] {
+    `*[_type == "hofstaatEintrag"] | order(_createdAt asc) {
       _id,
-      regentschaftsjahr,
-      koenigName,
-      koeniginName,
-      koenigBild { ..., asset-> },
-      hofstaatMitglieder[] {
-        rolle,
-        name,
-        bild { ..., asset-> }
-      }
+      bild { ..., asset-> },
+      titel,
+      kategorie
     }`
   );
 }
@@ -143,6 +138,21 @@ export async function getAllDownloads(): Promise<SanityDownload[]> {
       kategorie,
       reihenfolge,
       "datei": { "asset": { "url": datei.asset->url } }
+    }`
+  );
+}
+
+// ── SPONSOREN ────────────────────────────────────────────────────────────────
+
+export async function getAllSponsors(): Promise<SanitySponsor[]> {
+  return client.fetch(
+    `*[_type == "sponsor"] | order(ebene asc, reihenfolge asc, title asc) {
+      _id,
+      title,
+      logo { ..., asset-> },
+      link,
+      ebene,
+      reihenfolge
     }`
   );
 }

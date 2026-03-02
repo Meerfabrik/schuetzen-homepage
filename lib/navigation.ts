@@ -32,4 +32,5 @@ export const NAV_ITEMS: NavItem[] = [
     ],
   },
   { label: "Download", href: "/download" },
+  { label: "Sponsoren", href: "/sponsoren" },
 ];

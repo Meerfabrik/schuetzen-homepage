@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { getAllAppointments } from "@/lib/sanity/queries";
-import VeranstaltungenCalendar from "@/components/VeranstaltungenCalendar";
+import VeranstaltungenAgenda from "@/components/VeranstaltungenAgenda";
 import styles from "./page.module.css";
 
 export const revalidate = 60;
@@ -28,10 +28,12 @@ export default async function VeranstaltungenPage() {
         </p>
 
         {appointments.length > 0 ? (
-          <VeranstaltungenCalendar appointments={appointments} />
+          <div className={styles.agendaWrap}>
+            <VeranstaltungenAgenda appointments={appointments} />
+          </div>
         ) : (
           <div className={styles.empty}>
-            <p>Derzeit sind keine Termine im Kalender eingetragen.</p>
+            <p>Derzeit sind keine Termine eingetragen.</p>
             <p>
               Neue Termine können im{" "}
               <Link href="/studio" className={styles.studioLink}>
