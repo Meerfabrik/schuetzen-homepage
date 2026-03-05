@@ -85,7 +85,7 @@ export default async function UeberUnsPage() {
             <div className={styles.kompanienGrid}>
               {KOMPANIEN.map((k) => (
                 <div key={k} className={styles.kompanie}>
-                  🎯 {k}
+                  {k}
                 </div>
               ))}
             </div>

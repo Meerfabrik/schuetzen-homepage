@@ -35,11 +35,11 @@ export default async function DownloadPage() {
       </div>
 
       <section className="section">
-        <div className="container" style={{ maxWidth: "800px" }}>
+        <div className={`container ${styles.contentNarrow}`}>
           {Object.keys(grouped).length > 0 ? (
             Object.entries(grouped).map(([kat, dateien]) => (
               <div key={kat} className={styles.kategorie}>
-                <h2 className="section-title">{KATEGORIE_LABELS[kat] ?? kat}</h2>
+                <h2 className="section-title section-title-left">{KATEGORIE_LABELS[kat] ?? kat}</h2>
                 <div className={styles.dateienListe}>
                   {dateien.map((datei) => (
                     <a key={datei._id} href={datei.datei.asset.url}

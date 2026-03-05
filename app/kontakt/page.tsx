@@ -1,4 +1,6 @@
 import ContactForm from "./ContactForm";
+import { SectionTitleFadeIn } from "@/components/SectionTitleFadeIn";
+import styles from "./page.module.css";
 
 export const metadata = {
   title: "Kontakt",
@@ -15,38 +17,39 @@ export default function KontaktPage() {
       </div>
 
       <section className="section">
-        <div className="container" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", alignItems: "start" }}>
+        <div className={`container ${styles.grid}`}>
 
           {/* Kontaktinfos */}
           <div>
-            <h2 className="section-title">So erreicht ihr uns</h2>
-            <p className="section-subtitle">Ansprechpartner der Bruderschaft</p>
-
-            <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", marginTop: "1rem" }}>
-              <div style={{ padding: "1.25rem 1.5rem", background: "white", borderRadius: "var(--radius)", boxShadow: "var(--shadow)", borderLeft: "3px solid var(--gold)" }}>
-                <div style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gold)", marginBottom: "0.4rem" }}>Adresse</div>
-                <div style={{ fontSize: "0.95rem", lineHeight: 1.6 }}>
+            <SectionTitleFadeIn
+              title="So erreicht ihr uns"
+              subtitle="Ansprechpartner der Bruderschaft"
+            />
+            <div className={styles.infoCards}>
+              <div className={styles.infoCard}>
+                <div className={styles.infoLabel}>Adresse</div>
+                <div className={styles.infoContent}>
                   St. Sebastianus Schützenbruderschaft<br />
                   Büderich von 1567 e.V.<br />
                   Meerbusch-Büderich
                 </div>
               </div>
 
-              <div style={{ padding: "1.25rem 1.5rem", background: "white", borderRadius: "var(--radius)", boxShadow: "var(--shadow)", borderLeft: "3px solid var(--gold)" }}>
-                <div style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gold)", marginBottom: "0.4rem" }}>Social Media</div>
+              <div className={styles.infoCard}>
+                <div className={styles.infoLabel}>Social Media</div>
                 <a
                   href="https://facebook.com/667738963347662"
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: "var(--green-light)", fontWeight: 600 }}
+                  className={styles.infoLink}
                 >
                   Facebook – St. Sebastianus-Schützenbruderschaft Büderich e.V.
                 </a>
               </div>
 
-              <div style={{ padding: "1.25rem 1.5rem", background: "white", borderRadius: "var(--radius)", boxShadow: "var(--shadow)", borderLeft: "3px solid var(--gold)" }}>
-                <div style={{ fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.1em", textTransform: "uppercase", color: "var(--gold)", marginBottom: "0.4rem" }}>Schützen-App</div>
-                <div style={{ fontSize: "0.9rem", lineHeight: 1.6, color: "var(--text-muted)" }}>
+              <div className={styles.infoCard}>
+                <div className={styles.infoLabel}>Schützen-App</div>
+                <div className={styles.infoContentMuted}>
                   Ladet unsere App im App Store (iOS) oder Google Play Store (Android) herunter – Suchbegriff: „Schützen Büderich"
                 </div>
               </div>
@@ -55,8 +58,10 @@ export default function KontaktPage() {
 
           {/* Formular */}
           <div>
-            <h2 className="section-title">Schreibt uns</h2>
-            <p className="section-subtitle">Wir melden uns so schnell wie möglich zurück</p>
+            <SectionTitleFadeIn
+              title="Schreibt uns"
+              subtitle="Wir melden uns so schnell wie möglich zurück"
+            />
             <ContactForm />
           </div>
 
