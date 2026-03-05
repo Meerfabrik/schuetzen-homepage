@@ -93,6 +93,15 @@ h1, h2, h3, h4 {
   max-width: 40rem;
 }
 
+/* Left-aligned variant for sub-headings above left-aligned content */
+.section-title-left {
+  text-align: left;
+}
+
+.section-title-left::after {
+  margin: 0.45rem 0 0;
+}
+
 .btn {
   display: inline-flex;
   align-items: center;

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getAllAppointments } from "@/lib/sanity/queries";
 import VeranstaltungenAgenda from "@/components/VeranstaltungenAgenda";
+import { SectionTitleFadeIn } from "@/components/SectionTitleFadeIn";
 import styles from "./page.module.css";
 
 export const revalidate = 60;
@@ -20,30 +21,38 @@ export default async function VeranstaltungenPage() {
   }
 
   return (
-    <section className={`section ${styles.section}`}>
-      <div className="container">
-        <h1 className="section-title">Alle Veranstaltungen</h1>
-        <p className="section-subtitle">
-          Termine und Events der Bruderschaft im Überblick
-        </p>
-
-        {appointments.length > 0 ? (
-          <div className={styles.agendaWrap}>
-            <VeranstaltungenAgenda appointments={appointments} />
-          </div>
-        ) : (
-          <div className={styles.empty}>
-            <p>Derzeit sind keine Termine eingetragen.</p>
-            <p>
-              Neue Termine können im{" "}
-              <Link href="/studio" className={styles.studioLink}>
-                CMS unter /studio
-              </Link>{" "}
-              angelegt werden.
-            </p>
-          </div>
-        )}
+    <>
+      <div className="page-hero">
+        <div className="page-hero-badge">Termine & Events</div>
+        <h1>Veranstaltungen</h1>
+        <p>Alle Termine und Events der Bruderschaft im Überblick.</p>
       </div>
-    </section>
+
+      <section className={`section ${styles.section}`}>
+        <div className="container">
+          <SectionTitleFadeIn
+            title="Alle Veranstaltungen"
+            subtitle="Termine und Events der Bruderschaft im Überblick"
+          />
+
+          {appointments.length > 0 ? (
+            <div className={styles.agendaWrap}>
+              <VeranstaltungenAgenda appointments={appointments} />
+            </div>
+          ) : (
+            <div className={styles.empty}>
+              <p>Derzeit sind keine Termine eingetragen.</p>
+              <p>
+                Neue Termine können im{" "}
+                <Link href="/studio" className={styles.studioLink}>
+                  CMS unter /studio
+                </Link>{" "}
+                angelegt werden.
+              </p>
+            </div>
+          )}
+        </div>
+      </section>
+    </>
   );
 }
