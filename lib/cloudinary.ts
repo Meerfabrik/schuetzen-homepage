@@ -1,8 +1,12 @@
 import { v2 as cloudinary } from "cloudinary";
+import { unstable_cache } from "next/cache";
 
 const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 const apiKey = process.env.CLOUDINARY_API_KEY;
 const apiSecret = process.env.CLOUDINARY_API_SECRET;
+
+/** Cache-Dauer in Sekunden (5 Minuten) */
+const CACHE_TTL = 300;
 
 if (cloudName) {
   cloudinary.config({
@@ -78,14 +82,11 @@ function getResourceList(raw: Record<string, unknown>): Array<Record<string, unk
   return [];
 }
 
-/**
- * Listet Bilder aus einem Cloudinary-Ordner (z. B. "galerie", "vorstandsbilder").
- * Erfordert CLOUDINARY_API_KEY und CLOUDINARY_API_SECRET.
- * Unterstützt Dynamic Asset Folders (by_asset_folder) und Fixed Folder Mode (prefix).
- */
-export async function getGalleryImages(
-  folder = "galerie",
-  maxResults = 100
+// ── Interne (ungecachte) API-Aufrufe ──
+
+async function _fetchGalleryImages(
+  folder: string,
+  maxResults: number
 ): Promise<CloudinaryImage[]> {
   if (!cloudName || !apiKey || !apiSecret) {
     if (process.env.NODE_ENV === "development") {
@@ -99,21 +100,21 @@ export async function getGalleryImages(
   const opts = { max_results: maxResults, tags: true };
 
   try {
-    // 1. Dynamic Asset Folders: API by_asset_folder (Ordner wie in der Media Library, z. B. "galerie")
+    // 1. Dynamic Asset Folders
     const api = cloudinary.api as unknown as { resources_by_asset_folder?: (folder: string, options: Record<string, unknown>) => Promise<Record<string, unknown>> };
     if (typeof api.resources_by_asset_folder === "function") {
       try {
         const result = await api.resources_by_asset_folder(folder, opts);
         const list = getResourceList(result);
         if (list.length > 0) {
-          return normalizeResources(list);
+          return normalizeResources(list).sort((a, b) => a.public_id.localeCompare(b.public_id));
         }
       } catch {
-        // Fixed Folder Mode – by_asset_folder nicht unterstützt, Fallback unten
+        // Fallback unten
       }
     }
 
-    // 2. Fixed Folder Mode: prefix im public_id (z. B. "galerie/" oder "galerie/vorstandsbilder/")
+    // 2. Fixed Folder Mode
     const prefix = folder.includes("/") ? folder : `${folder}/`;
     const result = await cloudinary.api.resources({
       type: "upload",
@@ -128,7 +129,7 @@ export async function getGalleryImages(
     if (process.env.NODE_ENV === "development" && normalized.length === 0 && list.length === 0) {
       console.warn("[Cloudinary] Keine Ressourcen für Ordner:", folder, "| Prefix:", prefix);
     }
-    return normalized;
+    return normalized.sort((a, b) => a.public_id.localeCompare(b.public_id));
   } catch (err) {
     if (process.env.NODE_ENV === "development") {
       console.error("[Cloudinary] getGalleryImages Fehler:", err);
@@ -137,11 +138,84 @@ export async function getGalleryImages(
   }
 }
 
+async function _fetchSubfolders(folder: string): Promise<string[]> {
+  if (!cloudName || !apiKey || !apiSecret) return [];
+  try {
+    const result = await cloudinary.api.sub_folders(folder);
+    const folders = (result as { folders?: Array<{ path: string; name: string }> }).folders ?? [];
+    return folders.map((f) => f.name).sort();
+  } catch {
+    return [];
+  }
+}
+
+// ── Gecachte öffentliche API ──
+
+/**
+ * Listet Bilder aus einem Cloudinary-Ordner (gecacht für 5 Min).
+ */
+export const getGalleryImages = unstable_cache(
+  _fetchGalleryImages,
+  ["cloudinary-gallery"],
+  { revalidate: CACHE_TTL }
+);
+
+/**
+ * Listet Unterordner eines Cloudinary-Ordners auf (gecacht für 5 Min).
+ */
+export const getSubfolders = unstable_cache(
+  _fetchSubfolders,
+  ["cloudinary-subfolders"],
+  { revalidate: CACHE_TTL }
+);
+
+/**
+ * Holt Bilder aus einem Ordner und gruppiert sie nach Unterordnern (gecacht).
+ */
+export async function getGalleryImagesBySubfolder(
+  folder: string,
+  maxResults = 300
+): Promise<{ folder: string; images: CloudinaryImage[] }[]> {
+  if (!cloudName || !apiKey || !apiSecret) return [];
+
+  try {
+    const subfolders = await getSubfolders(folder);
+
+    const foldersToFetch = [folder, ...subfolders.map((sf) => `${folder}/${sf}`)];
+    const results = await Promise.all(
+      foldersToFetch.map((f) => getGalleryImages(f, maxResults))
+    );
+
+    const groups: { folder: string; images: CloudinaryImage[] }[] = [];
+
+    // Stammordner-Bilder (nur direkte, nicht aus Unterordnern)
+    const rootImages = results[0].filter((img) => {
+      const afterPrefix = img.public_id.slice(`${folder}/`.length);
+      return !afterPrefix.includes("/");
+    });
+    if (rootImages.length > 0) {
+      groups.push({ folder: "", images: rootImages });
+    }
+
+    // Unterordner-Bilder
+    for (let i = 0; i < subfolders.length; i++) {
+      const images = results[i + 1];
+      if (images.length > 0) {
+        groups.push({ folder: subfolders[i], images });
+      }
+    }
+
+    return groups;
+  } catch (err) {
+    if (process.env.NODE_ENV === "development") {
+      console.error("[Cloudinary] getGalleryImagesBySubfolder Fehler:", err);
+    }
+    return [];
+  }
+}
+
 /**
  * Sortiert Bilder anhand von Tags in eine feste Reihenfolge.
- * positionOrder = z. B. ["Präsident", "Vizepräsident", "Schriftführer", …].
- * Ein Bild mit Tag "Präsident" kommt vor einem mit "Vizepräsident".
- * Bilder ohne passenden Tag landen am Ende.
  */
 export function sortImagesByTagOrder<T extends { tags?: string[] }>(
   images: T[],
@@ -159,8 +233,6 @@ export type TagGroupConfig = { tag: string; heading: string };
 
 /**
  * Gruppiert Bilder nach dem ersten passenden Tag.
- * config = z. B. [{ tag: "gf", heading: "Geschäftsführender Vorstand" }, …].
- * Liefert Abschnitte in dieser Reihenfolge; Bilder ohne passenden Tag in letztem Abschnitt "Weitere".
  */
 export function groupImagesByTag<T extends { tags?: string[] }>(
   images: T[],
@@ -184,6 +256,15 @@ export function groupImagesByTag<T extends { tags?: string[] }>(
     result.push({ heading: "Weitere", images: rest });
   }
   return result;
+}
+
+/**
+ * Gibt den Anzeige-Titel eines Bildes zurück: Cloudinary-Titel, oder erstes Tag als Fallback.
+ */
+export function getImageCaption(img: CloudinaryImage): string | undefined {
+  if (img.title) return img.title;
+  if (img.tags && img.tags.length > 0) return img.tags[0];
+  return undefined;
 }
 
 export { cloudName };

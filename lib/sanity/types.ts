@@ -70,6 +70,17 @@ export interface SanityDownload {
   reihenfolge?: number;
 }
 
+// Kompanie
+export interface SanityKompanie {
+  _id: string;
+  name: string;
+  hauptmann?: string;
+  webseite?: string;
+  adresse?: string;
+  hinweis?: string;
+  reihenfolge?: number;
+}
+
 // Sponsor
 export type SponsorEbene = "hauptsponsor" | "sponsor" | "partner" | "foerderer";
 

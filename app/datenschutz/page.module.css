@@ -1,0 +1,78 @@
+.content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.intro {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--text);
+  margin-bottom: 2.5rem;
+}
+
+.address {
+  font-style: normal;
+  line-height: 1.8;
+  margin-bottom: 2.5rem;
+  font-size: 0.95rem;
+}
+
+.address strong {
+  display: block;
+  font-size: 1.05rem;
+  color: var(--green);
+  margin-bottom: 0.25rem;
+}
+
+.abschnitt {
+  margin-bottom: 2.5rem;
+}
+
+.abschnitt h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--green);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.75rem;
+}
+
+.abschnitt h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--green);
+  margin-bottom: 0.5rem;
+}
+
+.abschnitt p {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+
+.abschnitt p:last-child {
+  margin-bottom: 0;
+}
+
+.abschnitt ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--text);
+}
+
+.abschnitt a {
+  color: var(--green-light);
+  word-break: break-all;
+}
+
+.footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border, #e0e0e0);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}

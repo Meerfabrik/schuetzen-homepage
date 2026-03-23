@@ -45,9 +45,86 @@
   border-radius: 3px;
 }
 
+/* ── Jahrzehnt-Karten ── */
+.decadeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+.decadeCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 2.5rem 1.5rem;
+  border: 1px solid var(--green-mid);
+  border-radius: var(--radius);
+  background: white;
+  text-decoration: none;
+  color: var(--green);
+  transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.decadeCard:hover {
+  background: var(--green);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.decadeTitle {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.decadeYears {
+  font-size: 0.9rem;
+  opacity: 0.7;
+}
+
+.decadeCount {
+  font-size: 0.8rem;
+  font-weight: 600;
+  opacity: 0.5;
+  margin-top: 0.25rem;
+}
+
+/* ── Zurück-Link ── */
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--green);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 2rem;
+  transition: opacity 0.2s;
+}
+
+.backLink:hover {
+  opacity: 0.7;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .section {
     padding: 3rem 0;
+  }
+
+  .decadeGrid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1rem;
+  }
+
+  .decadeCard {
+    padding: 1.5rem 1rem;
+  }
+
+  .decadeTitle {
+    font-size: 1.3rem;
   }
 }

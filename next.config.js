@@ -13,10 +13,16 @@ const nextConfig = {
         hostname: "cdn.sanity.io",
       },
       {
-        // Cloudinary für Galerie
+        // Cloudinary für Galerie (Legacy)
         protocol: "https",
         hostname: "res.cloudinary.com",
         pathname: "/**",
+      },
+      {
+        // Supabase Storage für Galerie
+        protocol: "https",
+        hostname: "zhaljvkenzkxnbysbmyf.supabase.co",
+        pathname: "/storage/**",
       },
     ],
   },

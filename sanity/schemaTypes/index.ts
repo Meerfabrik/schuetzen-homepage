@@ -4,6 +4,7 @@ import { galerieSchema } from "./galerie";
 import { downloadSchema } from "./download";
 import { appointmentsSchema } from "./appointments";
 import { sponsorSchema } from "./sponsor";
+import { kompanieSchema } from "./kompanie";
 
 export const schemaTypes = [
   newsSchema,
@@ -12,4 +13,5 @@ export const schemaTypes = [
   downloadSchema,
   appointmentsSchema,
   sponsorSchema,
+  kompanieSchema,
 ];

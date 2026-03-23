@@ -1,0 +1,49 @@
+.content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.address {
+  font-style: normal;
+  line-height: 1.8;
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+
+.address strong {
+  display: block;
+  font-size: 1.05rem;
+  color: var(--green);
+  margin-bottom: 0.25rem;
+}
+
+.programmierung {
+  margin-bottom: 3rem;
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+
+.programmierung strong {
+  display: block;
+  color: var(--green);
+  margin-bottom: 0.15rem;
+}
+
+.abschnitt {
+  margin-bottom: 2.5rem;
+}
+
+.abschnitt h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--green);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.75rem;
+}
+
+.abschnitt p {
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--text);
+}

@@ -1,4 +1,6 @@
-import { getGalleryImages, getCloudinaryImageUrl, groupImagesByTag } from "@/lib/cloudinary";
+import { getAllImagesFlat, groupImagesBySubfolderTag } from "@/lib/supabase";
+import type { GalleryImage } from "@/lib/supabase";
+import { getAllKompanien } from "@/lib/sanity/queries";
 import VorstandCards from "@/components/VorstandCards";
 import { SectionTitleFadeIn } from "@/components/SectionTitleFadeIn";
 import styles from "./page.module.css";
@@ -10,40 +12,29 @@ export const metadata = {
 
 export const revalidate = 300; // 5 Minuten
 
-/** Tags in Cloudinary → Zwischenüberschrift (Reihenfolge = Anzeige-Reihenfolge) */
+/** Unterordner in Supabase → Zwischenüberschrift (Reihenfolge = Anzeige-Reihenfolge) */
 const VORSTAND_BILDER_GRUPPEN = [
   { tag: "gf", heading: "Geschäftsführender Vorstand", showAccentLine: true },
   { tag: "vs", heading: "Vorstand", showAccentLine: true },
   { tag: "ehren", heading: "Ehrenrat", showAccentLine: true },
 ];
 
-const KOMPANIEN = [
-  "1. Kompanie",
-  "2. Kompanie",
-  "3. Kompanie",
-  "4. Kompanie",
-  "Jungschützen",
-];
 
-function mapToVorstandImages(images: Awaited<ReturnType<typeof getGalleryImages>>) {
+function mapToVorstandImages(images: GalleryImage[]) {
   return images.map((img) => ({
     public_id: img.public_id,
-    thumbUrl: getCloudinaryImageUrl(img.public_id, {
-      width: 560,
-      height: 560,
-      crop: "fill",
-    }),
-    fullUrl: getCloudinaryImageUrl(img.public_id, {
-      width: 1600,
-      crop: "limit",
-    }),
+    thumbUrl: img.url,
+    fullUrl: img.url,
     title: img.title,
   }));
 }
 
 export default async function UeberUnsPage() {
-  const rawImages = await getGalleryImages("vorstandbilder", 50);
-  const gruppen = groupImagesByTag(rawImages, VORSTAND_BILDER_GRUPPEN);
+  const [rawImages, kompanien] = await Promise.all([
+    getAllImagesFlat("vorstandbilder"),
+    getAllKompanien(),
+  ]);
+  const gruppen = groupImagesBySubfolderTag(rawImages, "vorstandbilder", VORSTAND_BILDER_GRUPPEN);
 
   return (
     <>
@@ -77,19 +68,51 @@ export default async function UeberUnsPage() {
             </div>
           )}
 
-          <div style={{ marginTop: "4rem" }}>
-            <SectionTitleFadeIn
-              title="Kompanien"
-              subtitle="Unsere aktiven Kompanien"
-            />
+          {kompanien.length > 0 && (
+            <div style={{ marginTop: "4rem" }}>
+              <SectionTitleFadeIn
+                title="Unsere Kompanien"
+                subtitle="von 1900 bis 2021 – Tradition und Jugendlichkeit – Schützenwesen verbindet!"
+              />
             <div className={styles.kompanienGrid}>
-              {KOMPANIEN.map((k) => (
-                <div key={k} className={styles.kompanie}>
-                  {k}
+              {kompanien.map((k) => (
+                <div key={k.name} className={`${styles.kompanie}${k.hinweis ? ` ${styles.kompaniePaused}` : ""}`}>
+                  {k.webseite ? (
+                    <a href={k.webseite} target="_blank" rel="noopener noreferrer" className={styles.kompanieLink}>
+                      <span className={styles.kompanieIcon}>⚔</span>
+                      {k.name}
+                      <span className={styles.kompanieLinkIcon}>↗</span>
+                    </a>
+                  ) : (
+                    <span>
+                      <span className={styles.kompanieIcon}>⚔</span>
+                      {k.name}
+                    </span>
+                  )}
+                  {k.hinweis && <span className={styles.kompanieNote}>{k.hinweis}</span>}
+                  {k.hauptmann && <span className={styles.kompanieMeta}>👤 {k.hauptmann}</span>}
+                  {k.adresse && <span className={styles.kompanieMeta}>📍 {k.adresse}</span>}
+                  {k.webseite && (
+                    <a href={k.webseite} target="_blank" rel="noopener noreferrer" className={styles.kompanieUrl}>
+                      🔗 {k.webseite.replace(/^https?:\/\//, "")}
+                    </a>
+                  )}
                 </div>
               ))}
             </div>
+            <div className={styles.kompanienInfo}>
+              <p className={styles.kompanienInfoLead}>
+                In den vorstehenden Kompanien und Gesellschaften sind rund 650 Schützen organisiert. Hinzu kommen noch
+                Einzelmitglieder der Bruderschaft, die keiner Kompanie oder Gesellschaft angehören.
+              </p>
+              <p>
+                Kompanien mit einem Link öffnen ihre eigene Webseite in einem neuen Fenster. Bei Interesse an einer
+                Mitgliedschaft wenden Sie sich gerne an die Kontaktadresse im Impressum oder direkt an die auf den
+                jeweiligen Webseiten angegebenen Kontaktadressen.
+              </p>
+            </div>
           </div>
+          )}
         </div>
       </section>
     </>

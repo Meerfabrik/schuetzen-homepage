@@ -6,6 +6,7 @@ import type {
   Appointments,
   SanitySponsor,
   HofstaatEintrag,
+  SanityKompanie,
 } from "./types";
 
 // ── NEWS ─────────────────────────────────────────────────────────────────────
@@ -138,6 +139,22 @@ export async function getAllDownloads(): Promise<SanityDownload[]> {
       kategorie,
       reihenfolge,
       "datei": { "asset": { "url": datei.asset->url } }
+    }`
+  );
+}
+
+// ── KOMPANIEN ─────────────────────────────────────────────────────────────────
+
+export async function getAllKompanien(): Promise<SanityKompanie[]> {
+  return client.fetch(
+    `*[_type == "kompanie"] | order(reihenfolge asc, name asc) {
+      _id,
+      name,
+      hauptmann,
+      webseite,
+      adresse,
+      hinweis,
+      reihenfolge
     }`
   );
 }
