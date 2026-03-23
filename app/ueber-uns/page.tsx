@@ -74,44 +74,44 @@ export default async function UeberUnsPage() {
                 title="Unsere Kompanien"
                 subtitle="von 1900 bis 2021 – Tradition und Jugendlichkeit – Schützenwesen verbindet!"
               />
-            <div className={styles.kompanienGrid}>
-              {kompanien.map((k) => (
-                <div key={k.name} className={`${styles.kompanie}${k.hinweis ? ` ${styles.kompaniePaused}` : ""}`}>
-                  {k.webseite ? (
-                    <a href={k.webseite} target="_blank" rel="noopener noreferrer" className={styles.kompanieLink}>
-                      <span className={styles.kompanieIcon}>⚔</span>
-                      {k.name}
-                      <span className={styles.kompanieLinkIcon}>↗</span>
-                    </a>
-                  ) : (
-                    <span>
-                      <span className={styles.kompanieIcon}>⚔</span>
-                      {k.name}
-                    </span>
-                  )}
-                  {k.hinweis && <span className={styles.kompanieNote}>{k.hinweis}</span>}
-                  {k.hauptmann && <span className={styles.kompanieMeta}>👤 {k.hauptmann}</span>}
-                  {k.adresse && <span className={styles.kompanieMeta}>📍 {k.adresse}</span>}
-                  {k.webseite && (
-                    <a href={k.webseite} target="_blank" rel="noopener noreferrer" className={styles.kompanieUrl}>
-                      🔗 {k.webseite.replace(/^https?:\/\//, "")}
-                    </a>
-                  )}
-                </div>
-              ))}
+              <div className={styles.kompanienGrid}>
+                {kompanien.map((k) => (
+                  <div key={k.name} className={`${styles.kompanie}${k.hinweis ? ` ${styles.kompaniePaused}` : ""}`}>
+                    {k.webseite ? (
+                      <a href={k.webseite} target="_blank" rel="noopener noreferrer" className={styles.kompanieLink}>
+                        <span className={styles.kompanieIcon}>⚔</span>
+                        {k.name}
+                        <span className={styles.kompanieLinkIcon}>↗</span>
+                      </a>
+                    ) : (
+                      <span>
+                        <span className={styles.kompanieIcon}>⚔</span>
+                        {k.name}
+                      </span>
+                    )}
+                    {k.hinweis && <span className={styles.kompanieNote}>{k.hinweis}</span>}
+                    {k.hauptmann && <span className={styles.kompanieMeta}>👤 {k.hauptmann}</span>}
+                    {k.adresse && <span className={styles.kompanieMeta}>📍 {k.adresse}</span>}
+                    {k.webseite && (
+                      <a href={k.webseite} target="_blank" rel="noopener noreferrer" className={styles.kompanieUrl}>
+                        🔗 {k.webseite.replace(/^https?:\/\//, "")}
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div className={styles.kompanienInfo}>
+                <p className={styles.kompanienInfoLead}>
+                  In den vorstehenden Kompanien und Gesellschaften sind rund 650 Schützen organisiert. Hinzu kommen noch
+                  Einzelmitglieder der Bruderschaft, die keiner Kompanie oder Gesellschaft angehören.
+                </p>
+                <p>
+                  Kompanien mit einem Link öffnen ihre eigene Webseite in einem neuen Fenster. Bei Interesse an einer
+                  Mitgliedschaft wenden Sie sich gerne an die Kontaktadresse im Impressum oder direkt an die auf den
+                  jeweiligen Webseiten angegebenen Kontaktadressen.
+                </p>
+              </div>
             </div>
-            <div className={styles.kompanienInfo}>
-              <p className={styles.kompanienInfoLead}>
-                In den vorstehenden Kompanien und Gesellschaften sind rund 650 Schützen organisiert. Hinzu kommen noch
-                Einzelmitglieder der Bruderschaft, die keiner Kompanie oder Gesellschaft angehören.
-              </p>
-              <p>
-                Kompanien mit einem Link öffnen ihre eigene Webseite in einem neuen Fenster. Bei Interesse an einer
-                Mitgliedschaft wenden Sie sich gerne an die Kontaktadresse im Impressum oder direkt an die auf den
-                jeweiligen Webseiten angegebenen Kontaktadressen.
-              </p>
-            </div>
-          </div>
           )}
         </div>
       </section>
