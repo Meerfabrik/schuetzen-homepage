@@ -255,14 +255,37 @@
 }
 
 /* ── RESPONSIVE ── */
+
+/* Tablet: Logo kompakter, damit Desktop-Nav noch passt */
 @media (max-width: 1100px) {
-  .desktopNav { display: none; }
-  .hamburger { display: flex; flex-shrink: 0; }
   .logo {
     flex-shrink: 1;
     min-width: 0;
     gap: 0.5rem;
   }
+  .logoText {
+    font-size: 0.65rem;
+    max-width: 140px;
+    line-height: 1.2;
+  }
+  .logo img {
+    width: 36px;
+    height: auto;
+  }
+  .navLink {
+    padding: 0 0.55rem;
+    font-size: 0.75rem;
+  }
+  .ctaBtn {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.72rem;
+  }
+}
+
+/* Mobile: Hamburger-Menü */
+@media (max-width: 860px) {
+  .desktopNav { display: none; }
+  .hamburger { display: flex; flex-shrink: 0; }
   .logoText {
     font-size: 0.65rem;
     max-width: 140px;
