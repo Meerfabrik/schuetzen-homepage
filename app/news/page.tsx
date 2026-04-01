@@ -1,7 +1,6 @@
-import Link from "next/link";
 import NewsCard from "@/components/NewsCard";
 import { MotionFadeIn, StaggerGrid } from "@/components/AnimatedNewsSection";
-import { getAllNews } from "@/lib/sanity/queries";
+import { getAllNews } from "@/lib/directus/queries";
 import styles from "./page.module.css";
 
 // Immer frisch vom CMS laden, kein statischer Cache
@@ -20,7 +19,7 @@ export default async function NewsPage() {
   try {
     news = await getAllNews();
   } catch (err) {
-    console.error("Sanity getAllNews failed:", err);
+    console.error("Directus getAllNews failed:", err);
     fetchError = err instanceof Error ? err.message : "Beiträge konnten nicht geladen werden.";
   }
 
@@ -37,26 +36,19 @@ export default async function NewsPage() {
         {fetchError ? (
           <MotionFadeIn>
             <p style={{ color: "var(--red, #c00)" }}>
-              {fetchError} Bitte prüfen Sie die Sanity-Konfiguration (.env.local: NEXT_PUBLIC_SANITY_PROJECT_ID, NEXT_PUBLIC_SANITY_DATASET).
+              {fetchError} Bitte prüfen Sie die Directus-Konfiguration (.env.local: DIRECTUS_TOKEN).
             </p>
           </MotionFadeIn>
         ) : news.length > 0 ? (
           <StaggerGrid className={styles.newsGrid}>
             {news.map((article) => (
-              <NewsCard key={article._id} article={article} />
+              <NewsCard key={article.id} article={article} />
             ))}
           </StaggerGrid>
         ) : (
           <MotionFadeIn>
             <p style={{ color: "var(--text-muted)" }}>
-              Noch keine Beiträge vorhanden. Inhalte können im{" "}
-              <Link
-                href="/studio"
-                style={{ color: "var(--green-light)", fontWeight: 600 }}
-              >
-                CMS unter /studio
-              </Link>{" "}
-              angelegt werden.
+              Noch keine Beiträge vorhanden.
             </p>
           </MotionFadeIn>
         )}

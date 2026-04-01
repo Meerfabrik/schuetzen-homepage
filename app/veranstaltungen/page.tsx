@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getAllAppointments } from "@/lib/sanity/queries";
+import { getAllAppointments } from "@/lib/directus/queries";
 import VeranstaltungenAgenda from "@/components/VeranstaltungenAgenda";
 import { SectionTitleFadeIn } from "@/components/SectionTitleFadeIn";
 import styles from "./page.module.css";

@@ -5,7 +5,8 @@ import { HeroSection } from "@/components/HeroSection";
 import { MotionFadeIn, StaggerGrid } from "@/components/AnimatedNewsSection";
 import { InstagramSection } from "@/components/InstagramSection";
 import SchuetzenfestCountdown from "@/components/SchuetzenfestCountdown";
-import { getLatestNews, getUpcomingAppointments } from "@/lib/sanity/queries";
+import { getLatestNews } from "@/lib/directus/queries";
+import { getUpcomingAppointments } from "@/lib/directus/queries";
 import { getInstagramMedia } from "@/lib/instagram";
 import { NEXT_SCHUETZENFEST_DATE } from "@/lib/site";
 import { getGalleryImages, getCloudinaryImageUrl } from "@/lib/cloudinary";
@@ -66,7 +67,7 @@ export default async function HomePage() {
                 <>
                   <StaggerGrid className={styles.newsGrid}>
                     {news.map((article) => (
-                      <NewsCard key={article._id} article={article} />
+                      <NewsCard key={article.id} article={article} />
                     ))}
                   </StaggerGrid>
                   <MotionFadeIn delay={0.2}>
@@ -112,7 +113,7 @@ export default async function HomePage() {
                   <StaggerGrid className={styles.appointmentsList}>
                     {upcomingAppointments.map((appointment) => (
                       <AppointmentCard
-                        key={appointment._id}
+                        key={appointment.id}
                         appointment={appointment}
                         variant="list"
                       />

@@ -1,4 +1,4 @@
-import type { Appointments } from "@/lib/sanity/types";
+import type { Appointment } from "@/lib/directus/types";
 import AppointmentCard from "@/components/AppointmentCard";
 import styles from "./VeranstaltungenAgenda.module.css";
 
@@ -15,7 +15,7 @@ function formatMonthHeading(dateStr: string): string {
 }
 
 interface VeranstaltungenAgendaProps {
-  appointments: Appointments[];
+  appointments: Appointment[];
 }
 
 export default function VeranstaltungenAgenda({
@@ -25,7 +25,7 @@ export default function VeranstaltungenAgenda({
     return null;
   }
 
-  const byMonth = new Map<string, Appointments[]>();
+  const byMonth = new Map<string, Appointment[]>();
   for (const a of appointments) {
     const key = getMonthKey(a.startDate);
     if (!byMonth.has(key)) byMonth.set(key, []);
@@ -47,7 +47,7 @@ export default function VeranstaltungenAgenda({
           </h2>
           <ul className={styles.list} aria-label={`Termine ${formatMonthHeading(list[0].startDate)}`}>
             {list.map((appointment) => (
-              <li key={appointment._id}>
+              <li key={appointment.id}>
                 <AppointmentCard appointment={appointment} variant="list" />
               </li>
             ))}

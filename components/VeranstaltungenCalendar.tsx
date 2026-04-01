@@ -3,12 +3,12 @@
 import { useMemo, useState, useCallback } from "react";
 import { Calendar, dateFnsLocalizer } from "react-big-calendar";
 import type { View } from "react-big-calendar";
-import format from "date-fns/format";
-import parse from "date-fns/parse";
-import startOfWeek from "date-fns/startOfWeek";
-import getDay from "date-fns/getDay";
-import de from "date-fns/locale/de";
-import type { Appointments } from "@/lib/sanity/types";
+import { format } from "date-fns/format";
+import { parse } from "date-fns/parse";
+import { startOfWeek } from "date-fns/startOfWeek";
+import { getDay } from "date-fns/getDay";
+import { de } from "date-fns/locale/de";
+import type { Appointment } from "@/lib/directus/types";
 import CustomAgendaList from "@/components/CalendarAgendaList";
 import CalendarToolbar from "@/components/CalendarToolbar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -28,14 +28,14 @@ export type CalendarEvent = {
   title: string;
   start: Date;
   end: Date;
-  resource?: Appointments;
+  resource?: Appointment;
 };
 
-function appointmentToEvent(a: Appointments): CalendarEvent {
+function appointmentToEvent(a: Appointment): CalendarEvent {
   const start = new Date(a.startDate);
   const end = a.endDate ? new Date(a.endDate) : new Date(start.getTime() + 60 * 60 * 1000);
   return {
-    id: a._id,
+    id: String(a.id),
     title: a.title,
     start,
     end,
@@ -44,7 +44,7 @@ function appointmentToEvent(a: Appointments): CalendarEvent {
 }
 
 interface VeranstaltungenCalendarProps {
-  appointments: Appointments[];
+  appointments: Appointment[];
 }
 
 export default function VeranstaltungenCalendar({

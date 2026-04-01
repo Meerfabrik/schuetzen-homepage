@@ -1,15 +1,12 @@
 import Image from "next/image";
-import type { SanitySponsor } from "@/lib/sanity/types";
-import { urlFor } from "@/lib/sanity/client";
+import type { Sponsor } from "@/lib/directus/types";
 import styles from "./SponsorCard.module.css";
 
 interface SponsorCardProps {
-  sponsor: SanitySponsor;
+  sponsor: Sponsor;
 }
 
 export default function SponsorCard({ sponsor }: SponsorCardProps) {
-  const imageUrl =
-    sponsor.logo && urlFor(sponsor.logo).width(600).height(320).fit("max").url();
   const hasLink = sponsor.link?.trim();
   const ariaLabel = hasLink
     ? `${sponsor.title} – Website besuchen`
@@ -18,10 +15,10 @@ export default function SponsorCard({ sponsor }: SponsorCardProps) {
   const content = (
     <>
       <div className={styles.logoWrap}>
-        {imageUrl ? (
+        {sponsor.logoUrl ? (
           <Image
-            src={imageUrl}
-            alt={sponsor.logo?.alt ?? sponsor.title}
+            src={sponsor.logoUrl}
+            alt={sponsor.title}
             fill
             style={{ objectFit: "contain" }}
             sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 320px"

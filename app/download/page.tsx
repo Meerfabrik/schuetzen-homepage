@@ -1,5 +1,5 @@
-import { getAllDownloads } from "@/lib/sanity/queries";
-import type { SanityDownload } from "@/lib/sanity/types";
+import { getAllDownloads } from "@/lib/directus/queries";
+import type { Download } from "@/lib/directus/types";
 import styles from "./page.module.css";
 
 export const revalidate = 60;
@@ -10,17 +10,16 @@ export const metadata = {
 };
 
 const KATEGORIE_LABELS: Record<string, string> = {
-  mitgliedschaft: "Mitgliedschaft",
-  satzung: "Satzung & Ordnungen",
-  veranstaltungen: "Veranstaltungen",
-  sonstiges: "Sonstiges",
+  programme: "Programme",
+  formulare: "Formulare",
+  "pläne": "Pläne",
 };
 
 export default async function DownloadPage() {
   const downloads = await getAllDownloads();
 
   // Nach Kategorie gruppieren
-  const grouped = downloads.reduce<Record<string, SanityDownload[]>>((acc, d) => {
+  const grouped = downloads.reduce<Record<string, Download[]>>((acc, d) => {
     if (!acc[d.kategorie]) acc[d.kategorie] = [];
     acc[d.kategorie].push(d);
     return acc;
@@ -42,14 +41,11 @@ export default async function DownloadPage() {
                 <h2 className="section-title section-title-left">{KATEGORIE_LABELS[kat] ?? kat}</h2>
                 <div className={styles.dateienListe}>
                   {dateien.map((datei) => (
-                    <a key={datei._id} href={datei.datei.asset.url}
+                    <a key={datei.id} href={datei.fileUrl}
                       className={styles.dateiCard} target="_blank" rel="noopener noreferrer" download>
                       <div className={styles.dateiIcon}>📄</div>
                       <div className={styles.dateiInfo}>
                         <div className={styles.dateiName}>{datei.name}</div>
-                        {datei.beschreibung && (
-                          <div className={styles.dateiBeschreibung}>{datei.beschreibung}</div>
-                        )}
                       </div>
                       <div className={styles.dateiTyp}>PDF ↓</div>
                     </a>
@@ -59,11 +55,7 @@ export default async function DownloadPage() {
             ))
           ) : (
             <p style={{ color: "var(--text-muted)" }}>
-              Noch keine Dokumente vorhanden. Dateien können im{" "}
-              <a href="/studio" style={{ color: "var(--green-light)", fontWeight: 600 }}>
-                CMS unter /studio
-              </a>{" "}
-              hochgeladen werden.
+              Noch keine Dokumente vorhanden.
             </p>
           )}
         </div>

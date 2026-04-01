@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import type { SanityNews } from "@/lib/sanity/types";
-import { urlFor } from "@/lib/sanity/client";
+import type { NewsArticle } from "@/lib/directus/types";
 import styles from "./NewsCard.module.css";
 
 const CalendarIcon = () => (
@@ -25,16 +24,12 @@ const CalendarIcon = () => (
 );
 
 interface NewsCardProps {
-  article: SanityNews;
+  article: NewsArticle;
   /** Kategorie-Badge (z. B. "Aktuelles", "Digital", "Termine"). Standard: "Aktuelles". */
   category?: string;
 }
 
 export default function NewsCard({ article, category = "Aktuelles" }: NewsCardProps) {
-  const imageUrl = article.image
-    ? urlFor(article.image).width(800).height(450).url()
-    : null;
-
   const formattedDate = new Date(article.date).toLocaleDateString("de-DE", {
     day: "numeric",
     month: "long",
@@ -42,13 +37,13 @@ export default function NewsCard({ article, category = "Aktuelles" }: NewsCardPr
   });
 
   return (
-    <Link href={`/news/${article.slug.current}`} className={styles.card}>
+    <Link href={`/news/${article.slug}`} className={styles.card}>
       <span className={styles.badge}>{category}</span>
       <div className={styles.imgWrap}>
-        {imageUrl ? (
+        {article.imageUrl ? (
           <Image
-            src={imageUrl}
-            alt={article.image?.alt ?? article.title}
+            src={article.imageUrl}
+            alt={article.title}
             fill
             style={{ objectFit: "cover" }}
             sizes="(max-width: 768px) 100vw, 800px"

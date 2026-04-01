@@ -1,6 +1,6 @@
 import { getAllImagesFlat, groupImagesBySubfolderTag } from "@/lib/supabase";
 import type { GalleryImage } from "@/lib/supabase";
-import { getAllKompanien } from "@/lib/sanity/queries";
+import { getAllKompanien } from "@/lib/directus/queries";
 import VorstandCards from "@/components/VorstandCards";
 import { SectionTitleFadeIn } from "@/components/SectionTitleFadeIn";
 import styles from "./page.module.css";

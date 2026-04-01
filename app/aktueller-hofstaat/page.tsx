@@ -1,7 +1,6 @@
 import Image from "next/image";
-import { getHofstaatEintraege } from "@/lib/sanity/queries";
-import { urlFor } from "@/lib/sanity/client";
-import type { HofstaatEintrag, HofstaatKategorie } from "@/lib/sanity/types";
+import { getHofstaatEintraege } from "@/lib/directus/queries";
+import type { HofstaatEintrag, HofstaatKategorie } from "@/lib/directus/types";
 import styles from "./page.module.css";
 
 export const revalidate = 60;
@@ -13,13 +12,13 @@ export const metadata = {
 };
 
 const KATEGORIE_LABELS: Record<HofstaatKategorie, string> = {
-  koenigspaare: "Amtierendes Königspaar",
-  minister: "Minister",
+  koenigspaar: "Amtierendes Königspaar",
+  ministerpaar: "Minister",
   ehrendamen: "Ehrendamen",
   gesamtbild: "Gesamtbild",
-  jungkoenigin: "JungkönigIn",
-  ehrenkoenigin: "EhrenkönigIn",
-  ministerJungKoenigin: "Minister Jungkönigin",
+  jungkoenig: "JungkönigIn",
+  ehrenkoenig: "EhrenkönigIn",
+  jungkoenig_minister: "Minister Jungkönigin",
 };
 
 function byKategorie(kategorie: HofstaatKategorie) {
@@ -34,30 +33,29 @@ function HofstaatCard({
   variant?: "koenig" | "default";
 }) {
   const isKoenig = variant === "koenig";
+  const imgUrl = isKoenig
+    ? eintrag.imageUrl.replace("width=800", "width=1200").replace("height=600", "height=900")
+    : eintrag.imageUrl.replace("width=800", "width=500").replace("height=600", "height=375");
+
   return (
     <div
       className={
         isKoenig ? styles.koenigCard : styles.hofstaatCard
       }
     >
-      {eintrag.bild && (
-        <div
-          className={
-            isKoenig ? styles.koenigBildWrap : styles.mitgliedBild
-          }
-        >
-          <Image
-            src={urlFor(eintrag.bild)
-              .width(isKoenig ? 1200 : 500)
-              .height(isKoenig ? 900 : 375)
-              .url()}
-            alt={eintrag.titel}
-            fill
-            style={{ objectFit: "cover", objectPosition: "center" }}
-            sizes={isKoenig ? "(max-width: 700px) 100vw, 700px" : "(max-width: 480px) 100vw, 50vw"}
-          />
-        </div>
-      )}
+      <div
+        className={
+          isKoenig ? styles.koenigBildWrap : styles.mitgliedBild
+        }
+      >
+        <Image
+          src={imgUrl}
+          alt={eintrag.titel}
+          fill
+          style={{ objectFit: "cover", objectPosition: "center" }}
+          sizes={isKoenig ? "(max-width: 700px) 100vw, 700px" : "(max-width: 480px) 100vw, 50vw"}
+        />
+      </div>
       <div className={isKoenig ? styles.koenigInfo : styles.hofstaatInfo}>
         {isKoenig && <div className={styles.kroene}>👑</div>}
         {!isKoenig && (
@@ -91,19 +89,16 @@ function Trenner() {
 export default async function HofstaatPage() {
   const eintraege = await getHofstaatEintraege();
 
-  const koenigspaare = eintraege.filter(byKategorie("koenigspaare"));
-  const minister = eintraege.filter(byKategorie("minister"));
+  const koenigspaare = eintraege.filter(byKategorie("koenigspaar"));
+  const minister = eintraege.filter(byKategorie("ministerpaar"));
   const ehrendamen = eintraege.filter(byKategorie("ehrendamen"));
-  const jungkoenigin = eintraege.filter(byKategorie("jungkoenigin"));
-  const ministerJungKoenigin = eintraege.filter(
-    byKategorie("ministerJungKoenigin")
-  );
-  const ehrenkoenigin = eintraege.filter(byKategorie("ehrenkoenigin"));
+  const jungkoenig = eintraege.filter(byKategorie("jungkoenig"));
+  const ministerJungKoenig = eintraege.filter(byKategorie("jungkoenig_minister"));
+  const ehrenkoenig = eintraege.filter(byKategorie("ehrenkoenig"));
   const gesamtbild = eintraege.filter(byKategorie("gesamtbild"));
 
-  const hasJungBlock =
-    jungkoenigin.length > 0 || ministerJungKoenigin.length > 0;
-  const hasEhrenBlock = ehrenkoenigin.length > 0;
+  const hasJungBlock = jungkoenig.length > 0 || ministerJungKoenig.length > 0;
+  const hasEhrenBlock = ehrenkoenig.length > 0;
 
   return (
     <>
@@ -122,9 +117,9 @@ export default async function HofstaatPage() {
               {gesamtbild.length > 0 && (
                 <div className={styles.gesamtbildWrap}>
                   {gesamtbild.map((e) => (
-                    <div key={e._id} className={styles.gesamtbildItem}>
+                    <div key={e.id} className={styles.gesamtbildItem}>
                       <Image
-                        src={urlFor(e.bild).width(1200).url()}
+                        src={e.imageUrl.replace("width=800", "width=1200").replace("height=600", "height=600")}
                         alt={e.titel}
                         width={1200}
                         height={600}
@@ -142,11 +137,7 @@ export default async function HofstaatPage() {
               {koenigspaare.length > 0 && (
                 <div className={styles.koenigSection}>
                   {koenigspaare.map((e) => (
-                    <HofstaatCard
-                      key={e._id}
-                      eintrag={e}
-                      variant="koenig"
-                    />
+                    <HofstaatCard key={e.id} eintrag={e} variant="koenig" />
                   ))}
                 </div>
               )}
@@ -157,51 +148,51 @@ export default async function HofstaatPage() {
                   <h2 className="section-title">Minister</h2>
                   <div className={styles.ministerGrid}>
                     {minister.map((e) => (
-                      <HofstaatCard key={e._id} eintrag={e} />
+                      <HofstaatCard key={e.id} eintrag={e} />
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* 3. Ehrendamen (max. 2 Bilder, größer) */}
+              {/* 3. Ehrendamen */}
               {ehrendamen.length > 0 && (
                 <div className={styles.block}>
                   <h2 className="section-title">Ehrendamen</h2>
                   <div className={styles.ehrendamenGrid}>
                     {ehrendamen.map((e) => (
-                      <HofstaatCard key={e._id} eintrag={e} />
+                      <HofstaatCard key={e.id} eintrag={e} />
                     ))}
                   </div>
                 </div>
               )}
 
-              {/* Trenner → JungkönigIn (eine Karte, zentriert) */}
+              {/* Trenner -> JungkönigIn */}
               {hasJungBlock && <Trenner />}
               {hasJungBlock && (
                 <div className={styles.block}>
                   <h2 className="section-title">JungkönigIn</h2>
                   <div className={styles.singleCardGridWrap}>
                     <div className={styles.ministerGrid}>
-                      {jungkoenigin.map((e) => (
-                        <HofstaatCard key={e._id} eintrag={e} />
+                      {jungkoenig.map((e) => (
+                        <HofstaatCard key={e.id} eintrag={e} />
                       ))}
-                      {ministerJungKoenigin.map((e) => (
-                        <HofstaatCard key={e._id} eintrag={e} />
+                      {ministerJungKoenig.map((e) => (
+                        <HofstaatCard key={e.id} eintrag={e} />
                       ))}
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Trenner → EhrenkönigIn (eine Karte, zentriert) */}
+              {/* Trenner -> EhrenkönigIn */}
               {hasEhrenBlock && <Trenner />}
               {hasEhrenBlock && (
                 <div className={styles.block}>
                   <h2 className="section-title">EhrenkönigIn</h2>
                   <div className={styles.singleCardGridWrap}>
                     <div className={styles.ministerGrid}>
-                      {ehrenkoenigin.map((e) => (
-                        <HofstaatCard key={e._id} eintrag={e} />
+                      {ehrenkoenig.map((e) => (
+                        <HofstaatCard key={e.id} eintrag={e} />
                       ))}
                     </div>
                   </div>
@@ -210,14 +201,7 @@ export default async function HofstaatPage() {
             </>
           ) : (
             <p style={{ color: "var(--text-muted)" }}>
-              Noch kein Hofstaat eingetragen. Bitte im{" "}
-              <a
-                href="/studio"
-                style={{ color: "var(--green-light)", fontWeight: 600 }}
-              >
-                CMS unter /studio
-              </a>{" "}
-              anlegen.
+              Noch kein Hofstaat eingetragen.
             </p>
           )}
         </div>

@@ -1,6 +1,5 @@
 import Image from "next/image";
-import type { Appointments } from "@/lib/sanity/types";
-import { urlFor } from "@/lib/sanity/client";
+import type { Appointment } from "@/lib/directus/types";
 import styles from "./AppointmentCard.module.css";
 
 const CalendarIcon = () => (
@@ -60,7 +59,7 @@ const ClockIcon = () => (
 );
 
 interface AppointmentCardProps {
-  appointment: Appointments;
+  appointment: Appointment;
   /** "list" = eine Zeile pro Termin (Bild links, Text rechts), "card" = Kachel wie bisher. */
   variant?: "card" | "list";
 }
@@ -94,23 +93,36 @@ function formatTimeRange(startDate: string, endDate?: string | null): string {
   return `${startTimeStr} Uhr – ${end.toLocaleDateString("de-DE", dateOpts)}, ${endTimeStr} Uhr`;
 }
 
+/** Plaintext aus HTML extrahieren und Entities dekodieren für die Kurzvorschau. */
+function stripHtml(html: string): string {
+  const entities: Record<string, string> = {
+    "&amp;": "&", "&lt;": "<", "&gt;": ">", "&quot;": '"',
+    "&apos;": "'", "&nbsp;": " ", "&szlig;": "ß",
+    "&auml;": "ä", "&ouml;": "ö", "&uuml;": "ü",
+    "&Auml;": "Ä", "&Ouml;": "Ö", "&Uuml;": "Ü",
+  };
+  return html
+    .replace(/<[^>]*>/g, "")
+    .replace(/&#(\d+);/g, (_, code) => String.fromCharCode(Number(code)))
+    .replace(/&\w+;/g, (entity) => entities[entity] ?? entity)
+    .trim();
+}
+
 export default function AppointmentCard({
   appointment,
   variant = "card",
 }: AppointmentCardProps) {
-  const imageUrl =
-    appointment.image &&
-    urlFor(appointment.image).width(800).height(450).url();
   const hasLink = appointment.link?.trim();
+  const plainDescription = appointment.description ? stripHtml(appointment.description) : "";
 
   const content = (
     <>
       {variant === "card" && <span className={styles.badge}>Termin</span>}
       <div className={styles.imgWrap}>
-        {imageUrl ? (
+        {appointment.imageUrl ? (
           <Image
-            src={imageUrl}
-            alt={appointment.image?.alt ?? appointment.title}
+            src={appointment.imageUrl}
+            alt={appointment.title}
             fill
             style={{ objectFit: "cover" }}
             sizes={variant === "list" ? "200px" : "(max-width: 768px) 100vw, 800px"}
@@ -135,10 +147,10 @@ export default function AppointmentCard({
             {appointment.location}
           </span>
         )}
-        {appointment.description && (
+        {plainDescription && (
           <p className={styles.excerpt}>
-            {appointment.description.slice(0, 120)}
-            {appointment.description.length > 120 ? "…" : ""}
+            {plainDescription.slice(0, 120)}
+            {plainDescription.length > 120 ? "…" : ""}
           </p>
         )}
         {hasLink && variant !== "list" && (

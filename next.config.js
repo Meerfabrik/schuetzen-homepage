@@ -8,11 +8,6 @@ const nextConfig = {
         pathname: "/wp-content/uploads/**",
       },
       {
-        // Sanity CDN für Bilder
-        protocol: "https",
-        hostname: "cdn.sanity.io",
-      },
-      {
         // Cloudinary für Galerie (Legacy)
         protocol: "https",
         hostname: "res.cloudinary.com",
@@ -23,6 +18,12 @@ const nextConfig = {
         protocol: "https",
         hostname: "zhaljvkenzkxnbysbmyf.supabase.co",
         pathname: "/storage/**",
+      },
+      {
+        // Directus CMS Assets
+        protocol: "https",
+        hostname: "cms.meerfabrik.de",
+        pathname: "/assets/**",
       },
     ],
   },

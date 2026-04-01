@@ -1,5 +1,5 @@
-import { getAllSponsors } from "@/lib/sanity/queries";
-import type { SanitySponsor, SponsorEbene } from "@/lib/sanity/types";
+import { getAllSponsors } from "@/lib/directus/queries";
+import type { SponsorLevel } from "@/lib/directus/types";
 import SponsorCard from "@/components/SponsorCard";
 import styles from "./page.module.css";
 
@@ -11,31 +11,22 @@ export const metadata = {
     "Unsere Sponsoren und Partner – Unternehmen und Förderer, die die St. Sebastianus Schützenbruderschaft Büderich unterstützen.",
 };
 
-const EBENE_LABELS: Record<SponsorEbene, string> = {
-  hauptsponsor: "Hauptsponsoren",
-  sponsor: "Sponsoren",
-  partner: "Partner",
-  foerderer: "Förderer",
+const LEVEL_LABELS: Record<SponsorLevel, string> = {
+  haupt: "Hauptsponsoren",
+  premium: "Premium-Sponsoren",
 };
 
-const EBENE_ORDER: SponsorEbene[] = [
-  "hauptsponsor",
-  "sponsor",
-  "partner",
-  "foerderer",
-];
+const LEVEL_ORDER: SponsorLevel[] = ["haupt", "premium"];
 
 export default async function SponsorenPage() {
   const sponsors = await getAllSponsors();
 
-  const byEbene: Record<SponsorEbene, SanitySponsor[]> = {
-    hauptsponsor: [],
-    sponsor: [],
-    partner: [],
-    foerderer: [],
+  const byLevel: Record<SponsorLevel, typeof sponsors> = {
+    haupt: [],
+    premium: [],
   };
   for (const s of sponsors) {
-    byEbene[s.ebene].push(s);
+    byLevel[s.level]?.push(s);
   }
 
   return (
@@ -54,26 +45,19 @@ export default async function SponsorenPage() {
           {sponsors.length === 0 ? (
             <div className={styles.empty}>
               <strong>Noch keine Sponsoren eingetragen</strong>
-              <p>
-                Sponsoren können im{" "}
-                <a href="/studio" className={styles.studioLink}>
-                  Sanity Studio
-                </a>{" "}
-                unter dem Dokumenttyp &quot;Sponsor&quot; angelegt werden.
-              </p>
             </div>
           ) : (
-            EBENE_ORDER.map((ebene) => {
-              const list = byEbene[ebene];
+            LEVEL_ORDER.map((level) => {
+              const list = byLevel[level];
               if (!list?.length) return null;
               return (
-                <div key={ebene} className={styles.ebene}>
+                <div key={level} className={styles.ebene}>
                   <h2 className="section-title">
-                    {EBENE_LABELS[ebene]}
+                    {LEVEL_LABELS[level]}
                   </h2>
                   <div className={styles.grid}>
                     {list.map((sponsor) => (
-                      <SponsorCard key={sponsor._id} sponsor={sponsor} />
+                      <SponsorCard key={sponsor.id} sponsor={sponsor} />
                     ))}
                   </div>
                 </div>
