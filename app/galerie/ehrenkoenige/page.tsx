@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getSubfolders } from "@/lib/supabase";
+import { getAlbumsByDecade } from "@/lib/directus/queries";
 import styles from "../page.module.css";
 
 export const metadata = {
@@ -10,24 +10,8 @@ export const metadata = {
 
 export const revalidate = 300;
 
-function groupByDecade(years: string[]): { decade: string; years: string[] }[] {
-  const map = new Map<string, string[]>();
-  for (const y of years) {
-    const num = parseInt(y, 10);
-    if (isNaN(num)) continue;
-    const decade = `${Math.floor(num / 10) * 10}er`;
-    const list = map.get(decade) ?? [];
-    list.push(y);
-    map.set(decade, list);
-  }
-  return Array.from(map.entries())
-    .sort((a, b) => b[0].localeCompare(a[0]))
-    .map(([decade, years]) => ({ decade, years }));
-}
-
 export default async function EhrenkoenigeGaleriePage() {
-  const subfolders = await getSubfolders("ehrenkoenig-gallery");
-  const decades = groupByDecade(subfolders);
+  const decades = await getAlbumsByDecade("ehrenkoenige");
 
   return (
     <>
@@ -43,28 +27,31 @@ export default async function EhrenkoenigeGaleriePage() {
         <div className="container">
           {decades.length > 0 ? (
             <div className={styles.decadeGrid}>
-              {decades.map(({ decade, years }) => (
-                <Link
-                  key={decade}
-                  href={`/galerie/ehrenkoenige/${decade}`}
-                  className={styles.decadeCard}
-                >
-                  <span className={styles.decadeTitle}>{decade}</span>
-                  <span className={styles.decadeYears}>
-                    {years[0]} – {years[years.length - 1]}
-                  </span>
-                  <span className={styles.decadeCount}>
-                    {years.length} {years.length === 1 ? "Jahr" : "Jahre"}
-                  </span>
-                </Link>
-              ))}
+              {decades.map(({ decade, albums }) => {
+                const years = albums.map((a) => a.year!).sort();
+                return (
+                  <Link
+                    key={decade}
+                    href={`/galerie/ehrenkoenige/${decade}`}
+                    className={styles.decadeCard}
+                  >
+                    <span className={styles.decadeTitle}>{decade}</span>
+                    <span className={styles.decadeYears}>
+                      {years[0]} – {years[years.length - 1]}
+                    </span>
+                    <span className={styles.decadeCount}>
+                      {albums.length} {albums.length === 1 ? "Album" : "Alben"}
+                    </span>
+                  </Link>
+                );
+              })}
             </div>
           ) : (
             <div className={styles.empty}>
               <strong>Noch keine Bilder in der Ehrenkönig:innen Galerie</strong>
               <p>
-                Lade Bilder in den Supabase-Ordner <strong>ehrenkoenige-gallery</strong> hoch.
-                Lege Unterordner nach Jahren an (z.B. &quot;2000&quot;, &quot;2001&quot;).
+                Erstelle Alben mit der Kategorie <strong>ehrenkoenige</strong> im Directus CMS
+                und lade dort Bilder hoch.
               </p>
             </div>
           )}

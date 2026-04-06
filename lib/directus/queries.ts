@@ -2,7 +2,9 @@ import directus, { assetUrl } from "./client";
 import { readItems } from "@directus/sdk";
 import type {
   DirectusPost, DirectusDate, DirectusSponsor, DirectusKing, DirectusDownload, DirectusKompanie,
+  DirectusGalleryAlbum, DirectusGalleryImage,
   NewsArticle, Appointment, Sponsor, HofstaatEintrag, HofstaatKategorie, Download, Kompanie,
+  GalleryAlbum, GalleryImage, GalleryCategory,
 } from "./types";
 
 /** Slug aus dem Titel generieren (z. B. "Unsere App ist online" -> "unsere-app-ist-online"). */
@@ -207,4 +209,127 @@ export async function getAllKompanien(): Promise<Kompanie[]> {
     })
   );
   return kompanien.map(toKompanie);
+}
+
+// ── GALERIE ──────────────────────────────────────────────────────────────────
+
+function toGalleryAlbum(a: DirectusGalleryAlbum): GalleryAlbum {
+  return {
+    id: a.id,
+    title: a.title,
+    slug: a.slug,
+    category: a.category,
+    year: a.year,
+    description: a.description,
+    coverUrl: a.cover_image ? assetUrl(a.cover_image, 560, 420) : null,
+    imageCount: a.images?.length ?? 0,
+  };
+}
+
+function toGalleryImage(img: DirectusGalleryImage): GalleryImage {
+  return {
+    id: img.id,
+    title: img.title,
+    thumbUrl: assetUrl(img.image, 560, 420),
+    fullUrl: assetUrl(img.image, 1920),
+  };
+}
+
+/** Alle veröffentlichten Alben einer Kategorie holen. */
+export async function getAlbumsByCategory(category: GalleryCategory): Promise<GalleryAlbum[]> {
+  const albums = await directus.request<DirectusGalleryAlbum[]>(
+    readItems("schuetzen_gallery_albums", {
+      filter: { status: { _eq: "published" }, category: { _eq: category } },
+      sort: ["-year", "sort", "title"],
+      fields: ["id", "title", "slug", "category", "year", "description", "cover_image", "sort", "status", "images.id"],
+    })
+  );
+  return albums.map(toGalleryAlbum);
+}
+
+/** Ein Album mit allen Bildern laden. */
+export async function getAlbumBySlug(slug: string): Promise<{ album: GalleryAlbum; images: GalleryImage[] } | null> {
+  const albums = await directus.request<DirectusGalleryAlbum[]>(
+    readItems("schuetzen_gallery_albums", {
+      filter: { status: { _eq: "published" }, slug: { _eq: slug } },
+      fields: ["id", "title", "slug", "category", "year", "description", "cover_image", "sort", "status",
+               "images.id", "images.title", "images.image", "images.album", "images.sort"],
+      limit: 1,
+    })
+  );
+  if (albums.length === 0) return null;
+  const a = albums[0];
+  const images = (a.images ?? []).sort((x, y) => x.sort - y.sort).map(toGalleryImage);
+  return { album: toGalleryAlbum(a), images };
+}
+
+/** Alle Alben einer Kategorie, gruppiert nach Jahrzehnt. */
+export async function getAlbumsByDecade(category: GalleryCategory): Promise<{ decade: string; albums: GalleryAlbum[] }[]> {
+  const albums = await getAlbumsByCategory(category);
+  const map = new Map<string, GalleryAlbum[]>();
+  for (const album of albums) {
+    if (album.year === null) continue;
+    const decade = `${Math.floor(album.year / 10) * 10}er`;
+    const list = map.get(decade) ?? [];
+    list.push(album);
+    map.set(decade, list);
+  }
+  return Array.from(map.entries())
+    .sort((a, b) => b[0].localeCompare(a[0]))
+    .map(([decade, albums]) => ({ decade, albums }));
+}
+
+/** Alben eines bestimmten Jahrzehnts holen. */
+export async function getAlbumsInDecade(category: GalleryCategory, decadeStart: number): Promise<GalleryAlbum[]> {
+  const albums = await directus.request<DirectusGalleryAlbum[]>(
+    readItems("schuetzen_gallery_albums", {
+      filter: {
+        status: { _eq: "published" },
+        category: { _eq: category },
+        year: { _gte: decadeStart, _lt: decadeStart + 10 },
+      },
+      sort: ["year", "sort"],
+      fields: ["id", "title", "slug", "category", "year", "description", "cover_image", "sort", "status", "images.id"],
+    })
+  );
+  return albums.map(toGalleryAlbum);
+}
+
+/** Album mit Bildern laden (für Jahrzehnt-Detailseiten: alle Alben eines Jahrzehnts mit Bildern). */
+export async function getAlbumsWithImagesInDecade(
+  category: GalleryCategory,
+  decadeStart: number
+): Promise<{ album: GalleryAlbum; images: GalleryImage[] }[]> {
+  const albums = await directus.request<DirectusGalleryAlbum[]>(
+    readItems("schuetzen_gallery_albums", {
+      filter: {
+        status: { _eq: "published" },
+        category: { _eq: category },
+        year: { _gte: decadeStart, _lt: decadeStart + 10 },
+      },
+      sort: ["year", "sort"],
+      fields: ["id", "title", "slug", "category", "year", "description", "cover_image", "sort", "status",
+               "images.id", "images.title", "images.image", "images.album", "images.sort"],
+    })
+  );
+  return albums.map((a) => ({
+    album: toGalleryAlbum(a),
+    images: (a.images ?? []).sort((x, y) => x.sort - y.sort).map(toGalleryImage),
+  }));
+}
+
+/** Alle Alben einer Kategorie mit Bildern (für Historie-Seite). */
+export async function getAllAlbumsWithImages(category: GalleryCategory): Promise<{ album: GalleryAlbum; images: GalleryImage[] }[]> {
+  const albums = await directus.request<DirectusGalleryAlbum[]>(
+    readItems("schuetzen_gallery_albums", {
+      filter: { status: { _eq: "published" }, category: { _eq: category } },
+      sort: ["-year", "sort", "title"],
+      fields: ["id", "title", "slug", "category", "year", "description", "cover_image", "sort", "status",
+               "images.id", "images.title", "images.image", "images.album", "images.sort"],
+    })
+  );
+  return albums.map((a) => ({
+    album: toGalleryAlbum(a),
+    images: (a.images ?? []).sort((x, y) => x.sort - y.sort).map(toGalleryImage),
+  }));
 }

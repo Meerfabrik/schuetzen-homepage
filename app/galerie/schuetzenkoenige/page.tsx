@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getSubfolders } from "@/lib/supabase";
+import { getAlbumsByDecade } from "@/lib/directus/queries";
 import styles from "../page.module.css";
 
 export const metadata = {
@@ -10,25 +10,8 @@ export const metadata = {
 
 export const revalidate = 300;
 
-/** Gruppiert Jahresordner nach Jahrzehnt: "1990" → "1990er" */
-function groupByDecade(years: string[]): { decade: string; years: string[] }[] {
-  const map = new Map<string, string[]>();
-  for (const y of years) {
-    const num = parseInt(y, 10);
-    if (isNaN(num)) continue;
-    const decade = `${Math.floor(num / 10) * 10}er`;
-    const list = map.get(decade) ?? [];
-    list.push(y);
-    map.set(decade, list);
-  }
-  return Array.from(map.entries())
-    .sort((a, b) => b[0].localeCompare(a[0])) // neueste zuerst
-    .map(([decade, years]) => ({ decade, years }));
-}
-
 export default async function SchuetzenkoenigeGaleriePage() {
-  const subfolders = await getSubfolders("schuetzenkoenige-gallery");
-  const decades = groupByDecade(subfolders);
+  const decades = await getAlbumsByDecade("schuetzenkoenige");
 
   return (
     <>
@@ -44,21 +27,24 @@ export default async function SchuetzenkoenigeGaleriePage() {
         <div className="container">
           {decades.length > 0 ? (
             <div className={styles.decadeGrid}>
-              {decades.map(({ decade, years }) => (
-                <Link
-                  key={decade}
-                  href={`/galerie/schuetzenkoenige/${decade}`}
-                  className={styles.decadeCard}
-                >
-                  <span className={styles.decadeTitle}>{decade}</span>
-                  <span className={styles.decadeYears}>
-                    {years[0]} – {years[years.length - 1]}
-                  </span>
-                  <span className={styles.decadeCount}>
-                    {years.length} {years.length === 1 ? "Jahr" : "Jahre"}
-                  </span>
-                </Link>
-              ))}
+              {decades.map(({ decade, albums }) => {
+                const years = albums.map((a) => a.year!).sort();
+                return (
+                  <Link
+                    key={decade}
+                    href={`/galerie/schuetzenkoenige/${decade}`}
+                    className={styles.decadeCard}
+                  >
+                    <span className={styles.decadeTitle}>{decade}</span>
+                    <span className={styles.decadeYears}>
+                      {years[0]} – {years[years.length - 1]}
+                    </span>
+                    <span className={styles.decadeCount}>
+                      {albums.length} {albums.length === 1 ? "Album" : "Alben"}
+                    </span>
+                  </Link>
+                );
+              })}
             </div>
           ) : (
             <div
@@ -82,7 +68,7 @@ export default async function SchuetzenkoenigeGaleriePage() {
                 Noch keine Bilder in der Schützenkönig:innen Galerie
               </strong>
               <p style={{ fontSize: "0.95rem", maxWidth: "480px", margin: "0 auto" }}>
-                Lade Bilder in den Supabase-Ordner <strong>koenige-gallery</strong> hoch.
+                Erstelle Alben mit der Kategorie <strong>schuetzenkoenige</strong> im Directus CMS.
               </p>
             </div>
           )}

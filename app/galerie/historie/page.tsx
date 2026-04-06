@@ -1,4 +1,4 @@
-import { getGalleryImagesBySubfolder, getImageCaption } from "@/lib/supabase";
+import { getAllAlbumsWithImages } from "@/lib/directus/queries";
 import GalerieWithNav from "@/components/GalerieNav";
 
 export const metadata = {
@@ -10,15 +10,15 @@ export const metadata = {
 export const revalidate = 300;
 
 export default async function HistorienGaleriePage() {
-  const groups = await getGalleryImagesBySubfolder("historiengallery", 100);
+  const albumsWithImages = await getAllAlbumsWithImages("historie");
 
-  const sections = groups.map((group) => ({
-    heading: group.folder || "Allgemein",
-    images: group.images.map((img) => ({
-      public_id: img.public_id,
-      thumbUrl: img.url,
-      fullUrl: img.url,
-      title: getImageCaption(img),
+  const sections = albumsWithImages.map(({ album, images }) => ({
+    heading: album.title,
+    images: images.map((img) => ({
+      public_id: String(img.id),
+      thumbUrl: img.thumbUrl,
+      fullUrl: img.fullUrl,
+      title: img.title ?? undefined,
     })),
   }));
 
@@ -60,9 +60,8 @@ export default async function HistorienGaleriePage() {
                 Noch keine Bilder in der Historien Galerie
               </strong>
               <p style={{ fontSize: "0.95rem", maxWidth: "480px", margin: "0 auto" }}>
-                Lade Bilder in den Supabase-Ordner <strong>historien-gallery</strong> hoch.
-                Du kannst Unterordner anlegen (z.B. &quot;1950er&quot;, &quot;1960er&quot;), um die Bilder
-                nach Zeiträumen zu gruppieren.
+                Erstelle Alben mit der Kategorie <strong>historie</strong> im Directus CMS
+                und lade dort Bilder hoch.
               </p>
             </div>
           )}
