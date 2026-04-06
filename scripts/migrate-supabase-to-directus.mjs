@@ -6,6 +6,11 @@
  * Liest alle Bilder aus Supabase Storage, erstellt Alben in Directus
  * und lädt die Bilder über die Directus API hoch.
  *
+ * Features:
+ *   - Überspringt bereits existierende Alben (anhand Slug)
+ *   - Überspringt bereits migrierte Bilder (anhand Dateiname im Album)
+ *   - Retry mit Exponential Backoff bei Netzwerkfehlern
+ *
  * Verwendung:
  *   node scripts/migrate-supabase-to-directus.mjs
  *
@@ -25,6 +30,7 @@ const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const DIRECTUS_URL = process.env.DIRECTUS_URL || "https://cms.meerfabrik.de";
 const DIRECTUS_TOKEN = process.env.DIRECTUS_TOKEN;
 const BUCKET = "schuetzenfest-media";
+const MAX_RETRIES = 4;
 
 if (!SUPABASE_URL || !SUPABASE_KEY || !DIRECTUS_TOKEN) {
   console.error("Fehlende Umgebungsvariablen. Benötigt:");
@@ -69,6 +75,26 @@ function titleFromFilename(name) {
   return name.replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").replace(/\s+/g, " ").trim();
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// ── Retry-Wrapper ──
+
+async function withRetry(fn, label) {
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      const isRetryable = /bad gateway|502|503|504|timeout|econnreset|fetch failed/i.test(err.message);
+      if (!isRetryable || attempt === MAX_RETRIES) throw err;
+      const delay = Math.pow(2, attempt) * 1000; // 2s, 4s, 8s, 16s
+      console.log(`    ⏳ ${label}: Retry ${attempt}/${MAX_RETRIES} in ${delay / 1000}s (${err.message})`);
+      await sleep(delay);
+    }
+  }
+}
+
 // ── Directus API Helfer ──
 
 async function directusFetch(path, options = {}) {
@@ -87,15 +113,42 @@ async function directusFetch(path, options = {}) {
   return res.json();
 }
 
-async function createAlbum(title, slug, category, year = null, sort = 0) {
-  const body = {
-    title,
-    slug,
-    category,
-    year,
-    sort,
-    status: "published",
-  };
+/** Prüft ob ein Album mit diesem Slug bereits existiert. Gibt das Album zurück oder null. */
+async function findAlbumBySlug(slug) {
+  const result = await directusFetch(
+    `/items/schuetzen_gallery_albums?filter[slug][_eq]=${encodeURIComponent(slug)}&fields=id,title,slug&limit=1`
+  );
+  return result.data.length > 0 ? result.data[0] : null;
+}
+
+/** Holt die Dateinamen aller Bilder in einem Album (um Duplikate zu erkennen). */
+async function getExistingImageFilenames(albumId) {
+  const result = await directusFetch(
+    `/items/schuetzen_gallery_images?filter[album][_eq]=${albumId}&fields=id,image&limit=-1`
+  );
+  const filenames = new Set();
+  for (const item of result.data) {
+    // Lade den Dateinamen der verknüpften Datei
+    try {
+      const fileResult = await directusFetch(`/files/${item.image}?fields=filename_download`);
+      if (fileResult.data?.filename_download) {
+        filenames.add(fileResult.data.filename_download);
+      }
+    } catch {
+      // Datei nicht gefunden, ignorieren
+    }
+  }
+  return filenames;
+}
+
+async function getOrCreateAlbum(title, slug, category, year = null, sort = 0) {
+  const existing = await findAlbumBySlug(slug);
+  if (existing) {
+    console.log(`  ⏭ Album existiert bereits: "${existing.title}" (ID: ${existing.id})`);
+    return existing;
+  }
+
+  const body = { title, slug, category, year, sort, status: "published" };
   const result = await directusFetch("/items/schuetzen_gallery_albums", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -140,14 +193,16 @@ async function createGalleryImage(albumId, fileId, title, sort) {
   });
 }
 
-// ── Supabase Helfer ──
+// ── Supabase Helfer (mit Retry) ──
 
 async function listFolder(folder) {
-  const { data, error } = await supabase.storage
-    .from(BUCKET)
-    .list(folder, { limit: 1000, sortBy: { column: "name", order: "asc" } });
-  if (error) throw new Error(`Supabase list ${folder}: ${error.message}`);
-  return data ?? [];
+  return withRetry(async () => {
+    const { data, error } = await supabase.storage
+      .from(BUCKET)
+      .list(folder, { limit: 1000, sortBy: { column: "name", order: "asc" } });
+    if (error) throw new Error(`Supabase list ${folder}: ${error.message}`);
+    return data ?? [];
+  }, `list ${folder}`);
 }
 
 async function listSubfolders(folder) {
@@ -161,9 +216,11 @@ async function listImages(folder) {
 }
 
 async function downloadFile(path) {
-  const { data, error } = await supabase.storage.from(BUCKET).download(path);
-  if (error) throw new Error(`Download ${path}: ${error.message}`);
-  return data;
+  return withRetry(async () => {
+    const { data, error } = await supabase.storage.from(BUCKET).download(path);
+    if (error) throw new Error(`Download ${path}: ${error.message}`);
+    return data;
+  }, `download ${path}`);
 }
 
 function getMimeType(filename) {
@@ -186,12 +243,12 @@ async function migrateFolder(supabaseFolder, category) {
     for (const sf of subfolders) {
       const title = VORSTAND_TITLES[sf] || sf;
       const slug = slugify(`vorstand-${sf}`);
-      const album = await createAlbum(title, slug, category, null, albumSort++);
+      const album = await getOrCreateAlbum(title, slug, category, null, albumSort++);
       const images = await listImages(`${supabaseFolder}/${sf}`);
       await migrateImages(images, `${supabaseFolder}/${sf}`, album.id);
     }
     if (rootImages.length > 0) {
-      const album = await createAlbum("Vorstand Allgemein", "vorstand-allgemein", category, null, albumSort);
+      const album = await getOrCreateAlbum("Vorstand Allgemein", "vorstand-allgemein", category, null, albumSort);
       await migrateImages(rootImages, supabaseFolder, album.id);
     }
     return;
@@ -204,13 +261,12 @@ async function migrateFolder(supabaseFolder, category) {
       if (isNaN(year)) continue;
       const title = `${year}`;
       const slug = slugify(`${category}-${year}`);
-      const album = await createAlbum(title, slug, category, year);
+      const album = await getOrCreateAlbum(title, slug, category, year);
       const images = await listImages(`${supabaseFolder}/${sf}`);
       await migrateImages(images, `${supabaseFolder}/${sf}`, album.id);
     }
-    // Bilder im Stammordner
     if (rootImages.length > 0) {
-      const album = await createAlbum("Allgemein", slugify(`${category}-allgemein`), category);
+      const album = await getOrCreateAlbum("Allgemein", slugify(`${category}-allgemein`), category);
       await migrateImages(rootImages, supabaseFolder, album.id);
     }
     return;
@@ -222,12 +278,12 @@ async function migrateFolder(supabaseFolder, category) {
     for (const sf of subfolders) {
       const title = titleFromFilename(sf);
       const slug = slugify(`${category}-${sf}`);
-      const album = await createAlbum(title, slug, category, null, albumSort++);
+      const album = await getOrCreateAlbum(title, slug, category, null, albumSort++);
       const images = await listImages(`${supabaseFolder}/${sf}`);
       await migrateImages(images, `${supabaseFolder}/${sf}`, album.id);
     }
     if (rootImages.length > 0) {
-      const album = await createAlbum("Allgemein", slugify(`${category}-allgemein`), category, null, albumSort);
+      const album = await getOrCreateAlbum("Allgemein", slugify(`${category}-allgemein`), category, null, albumSort);
       await migrateImages(rootImages, supabaseFolder, album.id);
     }
     return;
@@ -237,39 +293,59 @@ async function migrateFolder(supabaseFolder, category) {
   if (rootImages.length > 0) {
     const title = supabaseFolder.replace(/-/g, " ");
     const slug = slugify(category);
-    const album = await createAlbum(title, slug, category);
+    const album = await getOrCreateAlbum(title, slug, category);
     await migrateImages(rootImages, supabaseFolder, album.id);
   }
 }
 
 async function migrateImages(imageFiles, folder, albumId) {
-  let sort = 0;
+  // Lade bestehende Dateinamen um Duplikate zu erkennen
+  const existingFilenames = await getExistingImageFilenames(albumId);
+  let sort = existingFilenames.size; // Sortierung nach existierenden fortsetzen
+  let skipped = 0;
+
   for (const file of imageFiles) {
+    if (existingFilenames.has(file.name)) {
+      skipped++;
+      continue;
+    }
+
     const path = `${folder}/${file.name}`;
     const title = titleFromFilename(file.name);
     try {
       process.stdout.write(`    ↑ ${file.name} ...`);
+
       const blob = await downloadFile(path);
       const buffer = await blob.arrayBuffer();
-      const directusFile = await uploadFileToDirectus(
-        buffer,
-        file.name,
-        getMimeType(file.name)
+
+      const directusFile = await withRetry(
+        () => uploadFileToDirectus(buffer, file.name, getMimeType(file.name)),
+        `upload ${file.name}`
       );
-      await createGalleryImage(albumId, directusFile.id, title, sort++);
+
+      await withRetry(
+        () => createGalleryImage(albumId, directusFile.id, title, sort++),
+        `link ${file.name}`
+      );
+
       console.log(` ✓`);
     } catch (err) {
       console.log(` ✗ ${err.message}`);
     }
+  }
+
+  if (skipped > 0) {
+    console.log(`    ⏭ ${skipped} Bilder übersprungen (bereits migriert)`);
   }
 }
 
 // ── Hauptprogramm ──
 
 async function main() {
-  console.log("🚀 Supabase → Directus Migration");
+  console.log("🚀 Supabase → Directus Migration (mit Skip + Retry)");
   console.log(`   Supabase: ${SUPABASE_URL} / Bucket: ${BUCKET}`);
   console.log(`   Directus: ${DIRECTUS_URL}`);
+  console.log(`   Retries: ${MAX_RETRIES}x mit Exponential Backoff`);
   console.log("");
 
   for (const [supabaseFolder, category] of Object.entries(FOLDER_TO_CATEGORY)) {
