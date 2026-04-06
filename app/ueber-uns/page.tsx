@@ -1,6 +1,4 @@
-import { getAllImagesFlat, groupImagesBySubfolderTag } from "@/lib/supabase";
-import type { GalleryImage } from "@/lib/supabase";
-import { getAllKompanien } from "@/lib/directus/queries";
+import { getAllAlbumsWithImages, getAllKompanien } from "@/lib/directus/queries";
 import VorstandCards from "@/components/VorstandCards";
 import { SectionTitleFadeIn } from "@/components/SectionTitleFadeIn";
 import styles from "./page.module.css";
@@ -12,29 +10,13 @@ export const metadata = {
 
 export const revalidate = 300; // 5 Minuten
 
-/** Unterordner in Supabase → Zwischenüberschrift (Reihenfolge = Anzeige-Reihenfolge) */
-const VORSTAND_BILDER_GRUPPEN = [
-  { tag: "gf", heading: "Geschäftsführender Vorstand", showAccentLine: true },
-  { tag: "vs", heading: "Vorstand", showAccentLine: true },
-  { tag: "ehren", heading: "Ehrenrat", showAccentLine: true },
-];
-
-
-function mapToVorstandImages(images: GalleryImage[]) {
-  return images.map((img) => ({
-    public_id: img.public_id,
-    thumbUrl: img.url,
-    fullUrl: img.url,
-    title: img.title,
-  }));
-}
-
 export default async function UeberUnsPage() {
-  const [rawImages, kompanien] = await Promise.all([
-    getAllImagesFlat("vorstandbilder"),
+  const [albumsWithImages, kompanien] = await Promise.all([
+    getAllAlbumsWithImages("vorstand"),
     getAllKompanien(),
   ]);
-  const gruppen = groupImagesBySubfolderTag(rawImages, "vorstandbilder", VORSTAND_BILDER_GRUPPEN);
+
+  const hasVorstand = albumsWithImages.some((a) => a.images.length > 0);
 
   return (
     <>
@@ -46,25 +28,27 @@ export default async function UeberUnsPage() {
 
       <section className="section">
         <div className="container">
-          {rawImages.length > 0 && (
+          {hasVorstand && (
             <div style={{ marginTop: "2rem" }}>
               <SectionTitleFadeIn
                 title="Der Vorstand der Bruderschaft"
                 subtitle="Vorstand und Ehrenrat unserer Bruderschaft"
               />
-              {gruppen
-                .filter((g) => g.images.length > 0 && g.heading !== "Weitere")
-                .map(({ heading, images }) => {
-                  const config = VORSTAND_BILDER_GRUPPEN.find((c) => c.heading === heading);
-                  return (
-                    <VorstandCards
-                      key={heading}
-                      heading={heading}
-                      images={mapToVorstandImages(images)}
-                      showAccentLine={config?.showAccentLine ?? true}
-                    />
-                  );
-                })}
+              {albumsWithImages
+                .filter(({ images }) => images.length > 0)
+                .map(({ album, images }) => (
+                  <VorstandCards
+                    key={album.id}
+                    heading={album.title}
+                    images={images.map((img) => ({
+                      public_id: String(img.id),
+                      thumbUrl: img.thumbUrl,
+                      fullUrl: img.fullUrl,
+                      title: img.title ?? undefined,
+                    }))}
+                    showAccentLine
+                  />
+                ))}
             </div>
           )}
 

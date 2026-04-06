@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getSubfolders, getGalleryImages, getImageCaption } from "@/lib/supabase";
+import { getAlbumsByDecade, getAlbumsWithImagesInDecade } from "@/lib/directus/queries";
 import GalerieGrid from "@/components/GalerieGrid";
 import styles from "../../page.module.css";
 
@@ -23,36 +23,18 @@ export async function generateMetadata({ params }: Props) {
 }
 
 export async function generateStaticParams() {
-  const subfolders = await getSubfolders("jungschuetzen-gallery");
-  const decades = new Set<string>();
-  for (const y of subfolders) {
-    const num = parseInt(y, 10);
-    if (!isNaN(num)) decades.add(`${Math.floor(num / 10) * 10}er`);
-  }
-  return Array.from(decades).map((d) => ({ jahrzehnt: d }));
+  const decades = await getAlbumsByDecade("jungkoenige");
+  return decades.map((d) => ({ jahrzehnt: d.decade }));
 }
 
 export default async function JahrzehntPage({ params }: Props) {
   const start = decadeStart(params.jahrzehnt);
   if (start === null) notFound();
 
-  const allSubfolders = await getSubfolders("jungschuetzen-gallery");
-  const yearsInDecade = allSubfolders
-    .filter((y) => {
-      const num = parseInt(y, 10);
-      return !isNaN(num) && num >= start && num < start + 10;
-    })
-    .sort();
+  const albumsWithImages = await getAlbumsWithImagesInDecade("jungkoenige", start);
+  if (albumsWithImages.length === 0) notFound();
 
-  if (yearsInDecade.length === 0) notFound();
-
-  const resolved = "jungkonige-gallery";
-  const yearImages = await Promise.all(
-    yearsInDecade.map(async (year) => {
-      const images = await getGalleryImages(`${resolved}/${year}`);
-      return { year, images };
-    })
-  );
+  const years = albumsWithImages.map((a) => a.album.year!).sort();
 
   return (
     <>
@@ -61,8 +43,8 @@ export default async function JahrzehntPage({ params }: Props) {
           <span className="page-hero-badge">Fotos & Erinnerungen</span>
           <h1>Jungkönig:innen {params.jahrzehnt}</h1>
           <p>
-            {yearsInDecade.length} {yearsInDecade.length === 1 ? "Jahrgang" : "Jahrgänge"} von{" "}
-            {yearsInDecade[0]} bis {yearsInDecade[yearsInDecade.length - 1]}
+            {albumsWithImages.length} {albumsWithImages.length === 1 ? "Album" : "Alben"} von{" "}
+            {years[0]} bis {years[years.length - 1]}
           </p>
         </div>
       </section>
@@ -73,9 +55,9 @@ export default async function JahrzehntPage({ params }: Props) {
             ← Alle Jahrzehnte
           </Link>
 
-          {yearImages.map(({ year, images }) =>
+          {albumsWithImages.map(({ album, images }) =>
             images.length > 0 ? (
-              <div key={year} style={{ marginBottom: "3.5rem" }}>
+              <div key={album.id} style={{ marginBottom: "3.5rem" }}>
                 <h2
                   style={{
                     fontSize: "1.1rem",
@@ -86,14 +68,14 @@ export default async function JahrzehntPage({ params }: Props) {
                     marginBottom: "1.5rem",
                   }}
                 >
-                  {year}
+                  {album.title}
                 </h2>
                 <GalerieGrid
                   images={images.map((img) => ({
-                    public_id: img.public_id,
-                    thumbUrl: img.url,
-                    fullUrl: img.url,
-                    title: getImageCaption(img),
+                    public_id: String(img.id),
+                    thumbUrl: img.thumbUrl,
+                    fullUrl: img.fullUrl,
+                    title: img.title ?? undefined,
                   }))}
                 />
               </div>

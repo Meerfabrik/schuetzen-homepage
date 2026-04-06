@@ -117,3 +117,46 @@ export interface NewsArticle {
   excerpt: string;
   content: string; // HTML
 }
+
+// ── GALERIE ──────────────────────────────────────────────────────────────────
+
+export type GalleryCategory = "historie" | "ehrenkoenige" | "schuetzenkoenige" | "jungkoenige" | "vorstand";
+
+export interface DirectusGalleryAlbum {
+  id: number;
+  title: string;
+  slug: string;
+  category: GalleryCategory;
+  year: number | null;
+  description: string | null;
+  cover_image: string | null;  // UUID referencing directus_files
+  sort: number;
+  status: string;              // "published" | "draft"
+  images?: DirectusGalleryImage[];
+}
+
+export interface DirectusGalleryImage {
+  id: number;
+  title: string | null;
+  image: string;               // UUID referencing directus_files
+  album: number;               // FK → schuetzen_gallery_albums
+  sort: number;
+}
+
+export interface GalleryAlbum {
+  id: number;
+  title: string;
+  slug: string;
+  category: GalleryCategory;
+  year: number | null;
+  description: string | null;
+  coverUrl: string | null;
+  imageCount: number;
+}
+
+export interface GalleryImage {
+  id: number;
+  title: string | null;
+  thumbUrl: string;
+  fullUrl: string;
+}
