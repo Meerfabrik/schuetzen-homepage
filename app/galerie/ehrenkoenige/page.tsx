@@ -1,6 +1,5 @@
-import Link from "next/link";
-import { getAlbumsByDecade } from "@/lib/directus/queries";
-import styles from "../page.module.css";
+import { getAllAlbumsWithImages } from "@/lib/directus/queries";
+import GalerieWithNav from "@/components/GalerieNav";
 
 export const metadata = {
   title: "Ehrenkönig:innen Galerie",
@@ -11,7 +10,19 @@ export const metadata = {
 export const revalidate = 300;
 
 export default async function EhrenkoenigeGaleriePage() {
-  const decades = await getAlbumsByDecade("ehrenkoenige");
+  const albumsWithImages = await getAllAlbumsWithImages("ehrenkoenige");
+
+  const sections = albumsWithImages.map(({ album, images }) => ({
+    heading: album.title,
+    images: images.map((img) => ({
+      public_id: String(img.id),
+      thumbUrl: img.thumbUrl,
+      fullUrl: img.fullUrl,
+      title: img.title ?? undefined,
+    })),
+  }));
+
+  const hasImages = sections.some((s) => s.images.length > 0);
 
   return (
     <>
@@ -25,31 +36,30 @@ export default async function EhrenkoenigeGaleriePage() {
 
       <section className="section" style={{ paddingTop: "4.5rem", paddingBottom: "4.5rem" }}>
         <div className="container">
-          {decades.length > 0 ? (
-            <div className={styles.decadeGrid}>
-              {decades.map(({ decade, albums }) => {
-                const years = albums.map((a) => a.year!).sort();
-                return (
-                  <Link
-                    key={decade}
-                    href={`/galerie/ehrenkoenige/${decade}`}
-                    className={styles.decadeCard}
-                  >
-                    <span className={styles.decadeTitle}>{decade}</span>
-                    <span className={styles.decadeYears}>
-                      {years[0]} – {years[years.length - 1]}
-                    </span>
-                    <span className={styles.decadeCount}>
-                      {albums.length} {albums.length === 1 ? "Album" : "Alben"}
-                    </span>
-                  </Link>
-                );
-              })}
-            </div>
+          {hasImages ? (
+            <GalerieWithNav sections={sections} />
           ) : (
-            <div className={styles.empty}>
-              <strong>Noch keine Bilder in der Ehrenkönig:innen Galerie</strong>
-              <p>
+            <div
+              style={{
+                textAlign: "center",
+                padding: "4rem 1.5rem",
+                background: "var(--cream-dark)",
+                borderRadius: "var(--radius)",
+                border: "2px dashed var(--green-mid)",
+                color: "var(--text-muted)",
+              }}
+            >
+              <strong
+                style={{
+                  display: "block",
+                  color: "var(--green)",
+                  fontSize: "1.1rem",
+                  marginBottom: "0.5rem",
+                }}
+              >
+                Noch keine Bilder in der Ehrenkönig:innen Galerie
+              </strong>
+              <p style={{ fontSize: "0.95rem", maxWidth: "480px", margin: "0 auto" }}>
                 Erstelle Alben mit der Kategorie <strong>ehrenkoenige</strong> im Directus CMS
                 und lade dort Bilder hoch.
               </p>
