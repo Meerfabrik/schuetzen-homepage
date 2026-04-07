@@ -16,13 +16,15 @@ export default function SponsorCard({ sponsor }: SponsorCardProps) {
     <>
       <div className={styles.logoWrap}>
         {sponsor.logoUrl ? (
-          <Image
-            src={sponsor.logoUrl}
-            alt={sponsor.title}
-            fill
-            style={{ objectFit: "contain" }}
-            sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 320px"
-          />
+          <div className={styles.logoInner}>
+            <Image
+              src={sponsor.logoUrl}
+              alt={sponsor.title}
+              fill
+              style={{ objectFit: "contain" }}
+              sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 320px"
+            />
+          </div>
         ) : (
           <div className={styles.placeholder}>{sponsor.title.charAt(0)}</div>
         )}

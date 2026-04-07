@@ -23,13 +23,19 @@
   cursor: pointer;
 }
 
-/* Logo von Rand zu Rand, oben abgerundet, vollständig sichtbar */
+/* Logo zentriert mit Abstand, damit alle Logos einheitlich wirken */
 .logoWrap {
-  position: relative;
   width: 100%;
   height: 200px;
   flex-shrink: 0;
   background: white;
+  padding: 1.5rem;
+}
+
+.logoInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 .placeholder {

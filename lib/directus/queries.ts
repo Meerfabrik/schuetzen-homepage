@@ -121,7 +121,7 @@ function toSponsor(s: DirectusSponsor): Sponsor {
   return {
     id: s.id,
     title: s.title,
-    logoUrl: s.logo ? assetUrl(s.logo, 600, 320) : null,
+    logoUrl: s.logo ? assetUrl(s.logo, 600, undefined, "contain") : null,
     level: s.level as Sponsor["level"],
     link: s.link,
   };
@@ -320,16 +320,19 @@ export async function getAlbumsWithImagesInDecade(
 
 /** Alle Alben einer Kategorie mit Bildern (für Historie-Seite). */
 export async function getAllAlbumsWithImages(category: GalleryCategory): Promise<{ album: GalleryAlbum; images: GalleryImage[] }[]> {
+  const sortByTitle = category === "ehrenkoenige" || category === "jungkoenige";
   const albums = await directus.request<DirectusGalleryAlbum[]>(
     readItems("schuetzen_gallery_albums", {
       filter: { status: { _eq: "published" }, category: { _eq: category } },
-      sort: ["-year", "sort", "title"],
+      sort: sortByTitle ? ["title"] : ["-year", "sort", "title"],
       fields: ["id", "title", "slug", "category", "year", "description", "cover_image", "sort", "status",
                "images.id", "images.title", "images.image", "images.album", "images.sort"],
     })
   );
   return albums.map((a) => ({
     album: toGalleryAlbum(a),
-    images: (a.images ?? []).sort((x, y) => x.sort - y.sort).map(toGalleryImage),
+    images: (a.images ?? []).sort((x, y) =>
+      sortByTitle ? (x.title ?? "").localeCompare(y.title ?? "") : x.sort - y.sort
+    ).map(toGalleryImage),
   }));
 }
