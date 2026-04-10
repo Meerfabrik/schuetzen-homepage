@@ -29,18 +29,22 @@ export default async function NewsDetailPage({ params }: Props) {
 
   return (
     <>
-      {heroImageUrl && (
+      {heroImageUrl ? (
         <div className={styles.heroImg}>
           <Image src={heroImageUrl} alt={article.title}
             fill style={{ objectFit: "cover" }} priority />
           <div className={styles.heroOverlay} />
+          <div className={styles.heroContent}>
+            <h1>{article.title}</h1>
+            <time className={styles.heroDate} dateTime={article.date}>{formattedDate}</time>
+          </div>
+        </div>
+      ) : (
+        <div className={`page-hero ${styles.heroCompact}`}>
+          <h1>{article.title}</h1>
+          <time className={styles.heroDate} dateTime={article.date}>{formattedDate}</time>
         </div>
       )}
-
-      <div className={`page-hero ${styles.heroCompact}`} style={{ paddingTop: heroImageUrl ? "1.5rem" : undefined }}>
-        <h1>{article.title}</h1>
-        <time className={styles.heroDate} dateTime={article.date}>{formattedDate}</time>
-      </div>
 
       <article className="section">
         <div

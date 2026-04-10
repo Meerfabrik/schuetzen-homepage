@@ -70,7 +70,7 @@ export async function getNewsBySlug(slug: string): Promise<NewsArticle | null> {
 
 // ── TERMINE ───────────────────────────────────────────────────────────────────
 
-const dateFields = ["id", "title", "start_date", "end_date", "location", "text", "image", "link", "published"] as const;
+const dateFields = ["id", "title", "start_date", "end_date", "location", "text", "image", "link", "published", "type"] as const;
 
 function toAppointment(d: DirectusDate): Appointment {
   return {
@@ -88,7 +88,12 @@ function toAppointment(d: DirectusDate): Appointment {
 export async function getAllAppointments(): Promise<Appointment[]> {
   const dates = await directus.request<DirectusDate[]>(
     readItems("schuetzen_dates", {
-      filter: { published: { _eq: true } },
+      filter: {
+        published: { _eq: true },
+        _and: [
+          { _or: [{ type: { _null: true } }, { type: { _neq: "schuetzenfest" } }] },
+        ],
+      },
       sort: ["start_date"],
       fields: [...dateFields],
     })
@@ -102,6 +107,9 @@ export async function getUpcomingAppointments(limit = 6): Promise<Appointment[]>
     readItems("schuetzen_dates", {
       filter: {
         published: { _eq: true },
+        _and: [
+          { _or: [{ type: { _null: true } }, { type: { _neq: "schuetzenfest" } }] },
+        ],
         _or: [
           { end_date: { _gte: today } },
           { end_date: { _null: true }, start_date: { _gte: today } },

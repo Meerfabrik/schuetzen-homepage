@@ -19,6 +19,7 @@ export interface DirectusDate {
   image: string;         // UUID referencing directus_files
   link: string | null;
   published: boolean;
+  type: string | null;
 }
 
 /** Einheitliches Termin-Format, das von den Komponenten konsumiert wird. */
