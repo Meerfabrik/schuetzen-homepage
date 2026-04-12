@@ -178,11 +178,17 @@ export async function getHofstaatEintraege(): Promise<HofstaatEintrag[]> {
 // ── DOWNLOADS ─────────────────────────────────────────────────────────────────
 
 function toDownload(d: DirectusDownload): Download {
+  const fileObj = typeof d.file === "object" && d.file !== null ? d.file : null;
+  const fileId = fileObj ? fileObj.id : (d.file as string);
+  const rawSize = fileObj?.filesize;
+  const fileSize = rawSize == null ? null : typeof rawSize === "string" ? Number(rawSize) : rawSize;
   return {
     id: d.id,
     name: d.title,
     kategorie: d.type,
-    fileUrl: `https://cms.meerfabrik.de/assets/${d.file}`,
+    fileUrl: `https://cms.meerfabrik.de/assets/${fileId}`,
+    fileSize: Number.isFinite(fileSize as number) ? (fileSize as number) : null,
+    fileType: fileObj?.type ?? null,
   };
 }
 
@@ -190,10 +196,46 @@ export async function getAllDownloads(): Promise<Download[]> {
   const downloads = await directus.request<DirectusDownload[]>(
     readItems("schuetzen_downloads", {
       sort: ["type", "title"],
-      fields: ["id", "title", "type", "file"],
+      fields: ["id", "title", "type", "file.id", "file.filesize", "file.type"],
     })
   );
   return downloads.map(toDownload);
+}
+
+// ── STATICS ───────────────────────────────────────────────────────────────────
+
+export interface SchuetzenStatics {
+  nextFestival: string | null;
+  pfingstsamstag: string | null;
+  pfingstsonntag: string | null;
+  pfingstmontag: string | null;
+  pfingstdienstag: string | null;
+}
+
+export async function getSchuetzenStatics(): Promise<SchuetzenStatics | null> {
+  const rows = await directus.request<Array<{
+    next_festival: string | null;
+    pfingstsamstag: string | null;
+    pfingstsonntag: string | null;
+    pfingstmontag: string | null;
+    pfingstdienstag: string | null;
+  }>>(
+    readItems("schuetzen_statics", {
+      filter: { next_festival: { _nnull: true } },
+      sort: ["-next_festival"],
+      limit: 1,
+      fields: ["next_festival", "pfingstsamstag", "pfingstsonntag", "pfingstmontag", "pfingstdienstag"],
+    })
+  );
+  const row = rows[0];
+  if (!row) return null;
+  return {
+    nextFestival: row.next_festival,
+    pfingstsamstag: row.pfingstsamstag,
+    pfingstsonntag: row.pfingstsonntag,
+    pfingstmontag: row.pfingstmontag,
+    pfingstdienstag: row.pfingstdienstag,
+  };
 }
 
 // ── KOMPANIEN ─────────────────────────────────────────────────────────────────

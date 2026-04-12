@@ -31,7 +31,9 @@ export default function KontaktPage() {
                 <div className={styles.infoContent}>
                   St. Sebastianus Schützenbruderschaft<br />
                   Büderich von 1567 e.V.<br />
-                  Meerbusch-Büderich
+                  c/o Patrick Wirtz<br />
+                  Winnendonk 30<br />
+                  40667 Meerbusch
                 </div>
               </div>
 

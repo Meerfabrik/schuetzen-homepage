@@ -47,9 +47,17 @@
   margin-top: 2.5rem;
 }
 
-.kroene {
-  font-size: 3.5rem;
-  margin-bottom: 1rem;
+.koenigInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.crownIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--gold);
+  margin-top: 0.75rem;
 }
 
 .koenigCard h2 {
@@ -60,12 +68,12 @@
 }
 
 .titel {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--gold);
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.4rem;
 }
 
 .koenigCard p {
@@ -103,6 +111,19 @@
   grid-template-columns: repeat(2, minmax(490px, 1fr));
   width: fit-content;
   max-width: 100%;
+}
+
+.singleCardGridWrap .ministerGrid:has(> :only-child) {
+  display: grid;
+  grid-template-columns: min(760px, 100%);
+  width: 100%;
+  justify-content: center;
+}
+
+.ministerGrid:has(> :only-child),
+.ehrendamenGrid:has(> :only-child) {
+  grid-template-columns: minmax(0, 760px);
+  justify-content: center;
 }
 
 /* Ehrendamen: 2 Spalten, gleiche Bildgröße/Verhältnis wie Minister */
@@ -171,13 +192,31 @@
   margin: 0;
 }
 
+/* Sektionsüberschrift mit Kronen-Icon */
+.sectionHeading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sectionCrown {
+  width: 1.1rem;
+  height: 1.1rem;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+
 /* Trenner zwischen Bereichen */
 .trenner {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 1rem;
-  margin: 3rem 0 5rem 0;
+  margin: 3rem 0 0 0;
+}
+
+.trenner + .block {
+  margin-top: 1rem;
 }
 
 .trennerLine {
@@ -188,8 +227,11 @@
 }
 
 .trennerIcon {
-  font-size: 1.25rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--gold);
   opacity: 0.8;
+  flex-shrink: 0;
 }
 
 /* JungkönigIn / EhrenkönigIn – eine zentrierte, größere Karte */
@@ -206,6 +248,7 @@
 
 /* Gesamtbild (optional) */
 .gesamtbildWrap {
+  margin-top: 3rem;
   margin-bottom: 2rem;
 }
 

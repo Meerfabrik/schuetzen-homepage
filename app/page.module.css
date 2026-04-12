@@ -140,6 +140,95 @@
   line-height: 1.6;
 }
 
+/* ── AKTUELLER KÖNIG ── */
+.koenigSection {
+  background: var(--cream);
+}
+
+.koenigCard {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 2rem;
+  align-items: stretch;
+  max-width: 880px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.koenigImageWrap {
+  position: relative;
+  width: 100%;
+  min-height: 320px;
+  background: #eef0ec;
+}
+
+.koenigBody {
+  padding: 1.75rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.koenigBadge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--orange);
+}
+
+.koenigTitle {
+  font-family: 'Encode Sans Condensed', sans-serif;
+  font-size: clamp(1.4rem, 2.6vw, 1.75rem);
+  color: var(--green);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.koenigText {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin: 0.25rem 0 1rem 0;
+  line-height: 1.5;
+}
+
+.koenigCta {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.1rem;
+  background: var(--green);
+  color: white;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.koenigCta:hover {
+  background: var(--green-mid);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 760px) {
+  .koenigCard {
+    grid-template-columns: 1fr;
+  }
+  .koenigImageWrap {
+    min-height: 260px;
+    aspect-ratio: 4/3;
+  }
+  .koenigBody {
+    padding: 1.5rem;
+  }
+}
+
 /* ── NEWS + FACEBOOK ── */
 .newsSection {
   background: var(--cream);

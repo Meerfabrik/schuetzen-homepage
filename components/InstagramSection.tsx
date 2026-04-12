@@ -9,7 +9,7 @@ import styles from "./InstagramSection.module.css";
 
 const INSTAGRAM_HANDLE = process.env.NEXT_PUBLIC_INSTAGRAM_HANDLE ?? "@buedericher_schuetzen";
 const INSTAGRAM_URL = process.env.NEXT_PUBLIC_INSTAGRAM_PROFILE_URL ?? "https://www.instagram.com/buedericher_schuetzen/";
-const FACEBOOK_URL = process.env.NEXT_PUBLIC_FACEBOOK_PAGE_URL ?? "https://www.facebook.com/667738963347662";
+const FACEBOOK_URL = process.env.NEXT_PUBLIC_FACEBOOK_PAGE_URL ?? "https://www.facebook.com/schuetzenmeerbusch";
 
 /** Platzhalter für Likes/Kommentare (Instagram Graph API liefert diese oft nicht). */
 function placeholderStats(index: number) {

@@ -1,12 +1,12 @@
 import Link from "next/link";
+import Image from "next/image";
 import NewsCard from "@/components/NewsCard";
 import AppointmentCard from "@/components/AppointmentCard";
 import { HeroSection } from "@/components/HeroSection";
 import { MotionFadeIn, StaggerGrid } from "@/components/AnimatedNewsSection";
 import { InstagramSection } from "@/components/InstagramSection";
 import SchuetzenfestCountdown from "@/components/SchuetzenfestCountdown";
-import { getLatestNews } from "@/lib/directus/queries";
-import { getUpcomingAppointments } from "@/lib/directus/queries";
+import { getLatestNews, getUpcomingAppointments, getHofstaatEintraege, getSchuetzenStatics } from "@/lib/directus/queries";
 import { getInstagramMedia } from "@/lib/instagram";
 import { NEXT_SCHUETZENFEST_DATE } from "@/lib/site";
 import { getGalleryImages, getCloudinaryImageUrl } from "@/lib/cloudinary";
@@ -20,12 +20,17 @@ export const metadata = {
 };
 
 export default async function HomePage() {
-  const [news, upcomingAppointments, instagramPosts, heroRawImages] = await Promise.all([
+  const [news, upcomingAppointments, instagramPosts, heroRawImages, hofstaat, statics] = await Promise.all([
     getLatestNews(3),
     getUpcomingAppointments(5),
     getInstagramMedia(6),
     getGalleryImages("hero", 5), // Weniger Bilder = weniger Ladezeit, 5 reicht für Slider
+    getHofstaatEintraege(),
+    getSchuetzenStatics().catch(() => null),
   ]);
+
+  const koenigspaar = hofstaat.find((e) => e.kategorie === "koenigspaar") ?? null;
+  const nextFestivalDate = statics?.nextFestival ?? NEXT_SCHUETZENFEST_DATE;
 
   const heroImages = heroRawImages.map((img) =>
     getCloudinaryImageUrl(img.public_id, {
@@ -45,12 +50,43 @@ export default async function HomePage() {
         infoText="Wir sind ein Teil der St. Sebastianus-Schützenbruderschaft in Deutschland, Büderich 1567 e.V. Tradition, Gemeinschaft und Freude – das ist unser Motto!"
         countdownSlot={
           <SchuetzenfestCountdown
-            targetDate={NEXT_SCHUETZENFEST_DATE}
+            targetDate={nextFestivalDate}
             title="Nächstes Schützenfest"
             variant="glass"
           />
         }
       />
+
+      {/* ── AKTUELLER KÖNIG ── */}
+      {koenigspaar && (
+        <section className={`section ${styles.koenigSection}`}>
+          <div className="container">
+            <MotionFadeIn>
+              <div className={styles.koenigCard}>
+                <div className={styles.koenigImageWrap}>
+                  <Image
+                    src={koenigspaar.imageUrl}
+                    alt={koenigspaar.titel}
+                    fill
+                    sizes="(max-width: 760px) 100vw, 380px"
+                    style={{ objectFit: "cover", objectPosition: "center top" }}
+                  />
+                </div>
+                <div className={styles.koenigBody}>
+                  <div className={styles.koenigBadge}>Amtierendes Königspaar</div>
+                  <h2 className={styles.koenigTitle}>{koenigspaar.titel}</h2>
+                  <p className={styles.koenigText}>
+                    Lernen Sie unser amtierendes Königspaar und den gesamten Hofstaat kennen.
+                  </p>
+                  <Link href="/aktueller-hofstaat" className={styles.koenigCta}>
+                    Zum Hofstaat →
+                  </Link>
+                </div>
+              </div>
+            </MotionFadeIn>
+          </div>
+        </section>
+      )}
 
       {/* ── NEWS + INSTAGRAM ── */}
       <section id="news" className={`section ${styles.newsSection}`}>
@@ -93,9 +129,6 @@ export default async function HomePage() {
       </section>
 
 
-
-      {/* ── INSTAGRAM (Design wie Screenshot) ── */}
-      <InstagramSection posts={instagramPosts} />
 
                     {/* ── TERMINE ── */}
       <section id="termine" className={`section ${styles.newsSection}`}>
@@ -146,6 +179,9 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ── INSTAGRAM (Design wie Screenshot) ── */}
+      <InstagramSection posts={instagramPosts} />
 
     </>
   );

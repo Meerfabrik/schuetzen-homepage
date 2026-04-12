@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { getAllAppointments } from "@/lib/directus/queries";
 import VeranstaltungenAgenda from "@/components/VeranstaltungenAgenda";
-import { SectionTitleFadeIn } from "@/components/SectionTitleFadeIn";
 import styles from "./page.module.css";
 
 export const revalidate = 60;
@@ -30,11 +29,6 @@ export default async function VeranstaltungenPage() {
 
       <section className={`section ${styles.section}`}>
         <div className="container">
-          <SectionTitleFadeIn
-            title="Alle Veranstaltungen"
-            subtitle="Termine und Events der Bruderschaft im Überblick"
-          />
-
           {appointments.length > 0 ? (
             <div className={styles.agendaWrap}>
               <VeranstaltungenAgenda appointments={appointments} />

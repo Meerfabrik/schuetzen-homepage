@@ -25,6 +25,22 @@ function byKategorie(kategorie: HofstaatKategorie) {
   return (e: HofstaatEintrag) => e.kategorie === kategorie;
 }
 
+function CrownIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M2 20h20M4 17l2-12 4.5 5L12 3l1.5 7L18 5l2 12H4z" />
+    </svg>
+  );
+}
+
 function HofstaatCard({
   eintrag,
   variant = "default",
@@ -57,7 +73,11 @@ function HofstaatCard({
         />
       </div>
       <div className={isKoenig ? styles.koenigInfo : styles.hofstaatInfo}>
-        {isKoenig && <div className={styles.kroene}>👑</div>}
+        {isKoenig && (
+          <div className={styles.titel}>
+            {KATEGORIE_LABELS[eintrag.kategorie]}
+          </div>
+        )}
         {!isKoenig && (
           <div className={styles.hofstaatRolle}>
             {KATEGORIE_LABELS[eintrag.kategorie]}
@@ -66,11 +86,7 @@ function HofstaatCard({
         <h2 className={isKoenig ? undefined : styles.hofstaatName}>
           {eintrag.titel}
         </h2>
-        {isKoenig && (
-          <div className={styles.titel}>
-            {KATEGORIE_LABELS[eintrag.kategorie]}
-          </div>
-        )}
+        {isKoenig && <CrownIcon className={styles.crownIcon} />}
       </div>
     </div>
   );
@@ -80,7 +96,7 @@ function Trenner() {
   return (
     <div className={styles.trenner} role="presentation">
       <span className={styles.trennerLine} />
-      <span className={styles.trennerIcon}>👑</span>
+      <CrownIcon className={styles.trennerIcon} />
       <span className={styles.trennerLine} />
     </div>
   );
@@ -103,6 +119,7 @@ export default async function HofstaatPage() {
   return (
     <>
       <div className="page-hero">
+        <div className="page-hero-badge">Königshaus & Hofstaat</div>
         <h1>Aktueller Hofstaat</h1>
         <p>
           Das amtierende Königspaar und der Hofstaat unserer Bruderschaft.
@@ -113,7 +130,31 @@ export default async function HofstaatPage() {
         <div className="container">
           {eintraege.length > 0 ? (
             <>
-              {/* Gesamtbild optional oben */}
+              {/* 1. Königspaar */}
+              {koenigspaare.length > 0 && (
+                <div className={styles.koenigSection}>
+                  {koenigspaare.map((e) => (
+                    <HofstaatCard key={e.id} eintrag={e} variant="koenig" />
+                  ))}
+                </div>
+              )}
+
+              {/* 2. Minister */}
+              {minister.length > 0 && (
+                <div className={styles.block}>
+                  <div className={styles.sectionHeading}>
+                    <CrownIcon className={styles.sectionCrown} />
+                    <h2 className="section-title">Minister</h2>
+                  </div>
+                  <div className={styles.ministerGrid}>
+                    {minister.map((e) => (
+                      <HofstaatCard key={e.id} eintrag={e} />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* 3. Gesamtbild – nach den Ministern */}
               {gesamtbild.length > 0 && (
                 <div className={styles.gesamtbildWrap}>
                   {gesamtbild.map((e) => (
@@ -133,31 +174,13 @@ export default async function HofstaatPage() {
                 </div>
               )}
 
-              {/* 1. Königspaar */}
-              {koenigspaare.length > 0 && (
-                <div className={styles.koenigSection}>
-                  {koenigspaare.map((e) => (
-                    <HofstaatCard key={e.id} eintrag={e} variant="koenig" />
-                  ))}
-                </div>
-              )}
-
-              {/* 2. Minister */}
-              {minister.length > 0 && (
-                <div className={styles.block}>
-                  <h2 className="section-title">Minister</h2>
-                  <div className={styles.ministerGrid}>
-                    {minister.map((e) => (
-                      <HofstaatCard key={e.id} eintrag={e} />
-                    ))}
-                  </div>
-                </div>
-              )}
-
               {/* 3. Ehrendamen */}
               {ehrendamen.length > 0 && (
                 <div className={styles.block}>
-                  <h2 className="section-title">Ehrendamen</h2>
+                  <div className={styles.sectionHeading}>
+                    <CrownIcon className={styles.sectionCrown} />
+                    <h2 className="section-title">Ehrendamen</h2>
+                  </div>
                   <div className={styles.ehrendamenGrid}>
                     {ehrendamen.map((e) => (
                       <HofstaatCard key={e.id} eintrag={e} />
@@ -170,7 +193,9 @@ export default async function HofstaatPage() {
               {hasJungBlock && <Trenner />}
               {hasJungBlock && (
                 <div className={styles.block}>
-                  <h2 className="section-title">JungkönigIn</h2>
+                  <div className={styles.sectionHeading}>
+                    <h2 className="section-title">JungkönigIn</h2>
+                  </div>
                   <div className={styles.singleCardGridWrap}>
                     <div className={styles.ministerGrid}>
                       {jungkoenig.map((e) => (
@@ -188,7 +213,9 @@ export default async function HofstaatPage() {
               {hasEhrenBlock && <Trenner />}
               {hasEhrenBlock && (
                 <div className={styles.block}>
-                  <h2 className="section-title">EhrenkönigIn</h2>
+                  <div className={styles.sectionHeading}>
+                    <h2 className="section-title">EhrenkönigIn</h2>
+                  </div>
                   <div className={styles.singleCardGridWrap}>
                     <div className={styles.ministerGrid}>
                       {ehrenkoenig.map((e) => (

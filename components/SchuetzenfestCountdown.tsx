@@ -55,16 +55,18 @@ export default function SchuetzenfestCountdown({
     setMounted(true);
   }, []);
 
+  const parsedTarget = targetDate.includes("T") ? targetDate : `${targetDate}T00:00:00`;
+
   useEffect(() => {
     if (!mounted) return;
-    const target = new Date(targetDate + "T00:00:00");
+    const target = new Date(parsedTarget);
     setTimeLeft(getTimeLeft(target));
     const id = setInterval(() => setTimeLeft(getTimeLeft(target)), 1000);
     return () => clearInterval(id);
-  }, [targetDate, mounted]);
+  }, [parsedTarget, mounted]);
 
   const formattedDate = mounted
-    ? new Date(targetDate + "T00:00:00").toLocaleDateString("de-DE", {
+    ? new Date(parsedTarget).toLocaleDateString("de-DE", {
         weekday: "long",
         day: "numeric",
         month: "long",

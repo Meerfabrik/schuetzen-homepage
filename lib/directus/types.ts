@@ -80,7 +80,7 @@ export interface DirectusDownload {
   id: number;
   title: string;
   type: string;          // "programme" | "formulare" | "pläne"
-  file: string;          // UUID referencing directus_files
+  file: string | { id: string; filesize?: number | string | null; type?: string | null };
 }
 
 export interface Download {
@@ -88,6 +88,8 @@ export interface Download {
   name: string;
   kategorie: string;
   fileUrl: string;
+  fileSize: number | null;   // bytes
+  fileType: string | null;   // mime type
 }
 
 export interface DirectusKompanie {
