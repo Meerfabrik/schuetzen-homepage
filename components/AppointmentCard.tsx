@@ -78,6 +78,21 @@ function formatDate(startDate: string): string {
   return new Date(startDate).toLocaleDateString("de-DE", dateOpts);
 }
 
+function formatDateRange(startDate: string, endDate?: string | null): string {
+  const startStr = formatDate(startDate);
+  if (!endDate?.trim()) return startStr;
+  const endStr = formatDate(endDate);
+  if (startStr === endStr) return startStr;
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  // Gleiches Jahr → Jahr nur am Ende anzeigen ("22. Mai – 26. Mai 2026")
+  if (start.getFullYear() === end.getFullYear()) {
+    const startShort = start.toLocaleDateString("de-DE", { day: "numeric", month: "long" });
+    return `${startShort} – ${endStr}`;
+  }
+  return `${startStr} – ${endStr}`;
+}
+
 function formatTimeRange(startDate: string, endDate?: string | null): string {
   const start = new Date(startDate);
   const startTimeStr = start.toLocaleTimeString("de-DE", timeOpts);
@@ -86,11 +101,7 @@ function formatTimeRange(startDate: string, endDate?: string | null): string {
   }
   const end = new Date(endDate);
   const endTimeStr = end.toLocaleTimeString("de-DE", timeOpts);
-  const sameDay = formatDate(startDate) === formatDate(endDate);
-  if (sameDay) {
-    return `${startTimeStr} – ${endTimeStr} Uhr`;
-  }
-  return `${startTimeStr} Uhr – ${end.toLocaleDateString("de-DE", dateOpts)}, ${endTimeStr} Uhr`;
+  return `${startTimeStr} – ${endTimeStr} Uhr`;
 }
 
 /** Plaintext aus HTML extrahieren und Entities dekodieren für die Kurzvorschau. */
@@ -135,12 +146,19 @@ export default function AppointmentCard({
         <h3 className={styles.title}>{appointment.title}</h3>
         <span className={styles.date}>
           <CalendarIcon />
-          {formatDate(appointment.startDate)}
+          {formatDateRange(appointment.startDate, appointment.endDate ?? null)}
         </span>
-        <span className={styles.time}>
-          <ClockIcon />
-          {formatTimeRange(appointment.startDate, appointment.endDate ?? null)}
-        </span>
+        {(() => {
+          const end = appointment.endDate?.trim();
+          const isMultiDay = end ? formatDate(appointment.startDate) !== formatDate(end) : false;
+          if (isMultiDay) return null;
+          return (
+            <span className={styles.time}>
+              <ClockIcon />
+              {formatTimeRange(appointment.startDate, appointment.endDate ?? null)}
+            </span>
+          );
+        })()}
         {appointment.location && (
           <span className={styles.location}>
             <PinIcon />

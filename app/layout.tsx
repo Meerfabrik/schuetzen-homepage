@@ -2,6 +2,8 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { ScrollToTop } from "@/components/ScrollToTop";
+import { ConsentProvider } from "@/lib/consent";
+import { CookieBanner } from "@/components/CookieBanner";
 import type { ReactNode } from "react";
 
 
@@ -28,10 +30,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="de">
       <body>
-        <Header />
-        <main>{children}</main>
-        <Footer />
-        <ScrollToTop />
+        <ConsentProvider>
+          <Header />
+          <main>{children}</main>
+          <Footer />
+          <ScrollToTop />
+          <CookieBanner />
+        </ConsentProvider>
       </body>
     </html>
   );

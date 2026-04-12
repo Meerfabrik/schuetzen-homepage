@@ -533,6 +533,34 @@ export default function DatenschutzPage() {
             </p>
           </div>
 
+          <div className={styles.abschnitt}>
+            <h2>Einbindung von Google Maps</h2>
+            <p>
+              Wir binden auf unserer Kontaktseite Kartenmaterial des Dienstes &bdquo;Google Maps&ldquo;
+              des Anbieters Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland, ein,
+              um unseren Standort anschaulich darzustellen und die Anreise zu erleichtern. Die
+              Verarbeitung erfolgt auf Grundlage unserer berechtigten Interessen (Art. 6 Abs. 1 lit. f.
+              DSGVO) an einer ansprechenden Darstellung unseres Onlineangebotes und einer leichten
+              Auffindbarkeit der von uns angegebenen Orte.
+            </p>
+            <p>
+              Beim Aufruf der Kontaktseite werden über das eingebettete Karten-Iframe Daten direkt an
+              Server von Google übertragen, u.a. die IP-Adresse des Nutzers, Datum und Uhrzeit der
+              Anfrage, die zuvor besuchte Seite (Referrer), Browser- und Betriebssysteminformationen
+              sowie ggf. Standortdaten, sofern der Nutzer entsprechende Funktionen freigegeben hat.
+              Die Datenverarbeitung kann auch in den USA stattfinden. Hierbei können Daten in
+              Drittländer (insbesondere die USA) übermittelt werden; Google ist nach dem
+              EU-US Data Privacy Framework zertifiziert.
+            </p>
+            <p>
+              Weitere Informationen zur Datenverarbeitung durch Google sowie zu Einstellungs- und
+              Widerspruchsmöglichkeiten finden Sie in den Datenschutzhinweisen von
+              Google: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">https://policies.google.com/privacy</a> sowie
+              in den Einstellungen für die
+              Werbedarstellung: <a href="https://adssettings.google.com/authenticated" target="_blank" rel="noopener noreferrer">https://adssettings.google.com/authenticated</a>.
+            </p>
+          </div>
+
           <div className={styles.footer}>
             Erstellt mit Datenschutz-Generator.de von RA Dr. Thomas Schwenke
           </div>

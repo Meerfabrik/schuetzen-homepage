@@ -1,0 +1,48 @@
+.placeholder {
+  background: #eef0ec;
+  border: 1px dashed #c5cdc4;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  padding: 2rem 1.5rem;
+}
+
+.inner {
+  text-align: center;
+  max-width: 460px;
+}
+
+.title {
+  font-weight: 700;
+  color: var(--green);
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.text {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin: 0 0 1.25rem 0;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.2rem;
+  background: var(--green);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn:hover {
+  background: var(--green-mid);
+}

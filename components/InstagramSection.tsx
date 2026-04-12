@@ -5,24 +5,12 @@ import Link from "next/link";
 import { motion } from "motion/react";
 import { Instagram, Facebook, Heart, MessageCircle, ExternalLink } from "lucide-react";
 import type { InstagramMedia } from "@/lib/instagram";
+import { ConsentGate } from "@/components/ConsentGate";
 import styles from "./InstagramSection.module.css";
 
 const INSTAGRAM_HANDLE = process.env.NEXT_PUBLIC_INSTAGRAM_HANDLE ?? "@buedericher_schuetzen";
 const INSTAGRAM_URL = process.env.NEXT_PUBLIC_INSTAGRAM_PROFILE_URL ?? "https://www.instagram.com/buedericher_schuetzen/";
 const FACEBOOK_URL = process.env.NEXT_PUBLIC_FACEBOOK_PAGE_URL ?? "https://www.facebook.com/schuetzenmeerbusch";
-
-/** Platzhalter für Likes/Kommentare (Instagram Graph API liefert diese oft nicht). */
-function placeholderStats(index: number) {
-  const pairs = [
-    [86, 12],
-    [102, 8],
-    [94, 15],
-    [78, 6],
-    [125, 20],
-    [98, 11],
-  ];
-  return pairs[index % pairs.length];
-}
 
 interface InstagramSectionProps {
   posts: InstagramMedia[];
@@ -88,9 +76,15 @@ export function InstagramSection({ posts }: InstagramSectionProps) {
         </motion.div>
 
         {/* Instagram Grid */}
+        <ConsentGate
+          category="instagram"
+          providerLabel="Instagram"
+          description="Um aktuelle Beiträge unseres Instagram-Kanals anzuzeigen, müssen Sie das Laden von Instagram-Inhalten erlauben. Dabei werden Daten an Meta Platforms Inc. übertragen."
+        >
         <div className={styles.grid}>
           {displayPosts.map((post, index) => {
-            const [likes, comments] = placeholderStats(index);
+            const likes = post.like_count;
+            const comments = post.comments_count;
             const imageUrl =
               post.media_type === "VIDEO" && post.thumbnail_url
                 ? post.thumbnail_url
@@ -127,16 +121,22 @@ export function InstagramSection({ posts }: InstagramSectionProps) {
 
                   {/* Overlay */}
                   <div className={styles.overlay}>
-                    <div className={styles.stats}>
-                      <span className={styles.stat}>
-                        <Heart className={styles.statIcon} size={24} fill="white" />
-                        {likes}
-                      </span>
-                      <span className={styles.stat}>
-                        <MessageCircle className={styles.statIcon} size={24} fill="white" />
-                        {comments}
-                      </span>
-                    </div>
+                    {(typeof likes === "number" || typeof comments === "number") && (
+                      <div className={styles.stats}>
+                        {typeof likes === "number" && (
+                          <span className={styles.stat}>
+                            <Heart className={styles.statIcon} size={24} fill="white" />
+                            {likes}
+                          </span>
+                        )}
+                        {typeof comments === "number" && (
+                          <span className={styles.stat}>
+                            <MessageCircle className={styles.statIcon} size={24} fill="white" />
+                            {comments}
+                          </span>
+                        )}
+                      </div>
+                    )}
                     <p className={styles.captionText}>{captionShort}</p>
                     <span className={styles.viewBtn}>
                       Ansehen
@@ -152,6 +152,7 @@ export function InstagramSection({ posts }: InstagramSectionProps) {
             );
           })}
         </div>
+        </ConsentGate>
 
         {/* CTA */}
         <motion.div

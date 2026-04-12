@@ -22,7 +22,7 @@ export const metadata = {
 export default async function HomePage() {
   const [news, upcomingAppointments, instagramPosts, heroRawImages, hofstaat, statics] = await Promise.all([
     getLatestNews(3),
-    getUpcomingAppointments(5),
+    getUpcomingAppointments(3),
     getInstagramMedia(6),
     getGalleryImages("hero", 5), // Weniger Bilder = weniger Ladezeit, 5 reicht für Slider
     getHofstaatEintraege(),

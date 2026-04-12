@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getAllAppointments } from "@/lib/directus/queries";
+import { getUpcomingAppointments } from "@/lib/directus/queries";
 import VeranstaltungenAgenda from "@/components/VeranstaltungenAgenda";
 import styles from "./page.module.css";
 
@@ -12,11 +12,11 @@ export const metadata = {
 };
 
 export default async function VeranstaltungenPage() {
-  let appointments: Awaited<ReturnType<typeof getAllAppointments>> = [];
+  let appointments: Awaited<ReturnType<typeof getUpcomingAppointments>> = [];
   try {
-    appointments = await getAllAppointments();
+    appointments = await getUpcomingAppointments();
   } catch (err) {
-    console.error("Sanity getAllAppointments failed:", err);
+    console.error("Directus getUpcomingAppointments failed:", err);
   }
 
   return (

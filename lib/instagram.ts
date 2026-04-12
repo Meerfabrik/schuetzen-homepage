@@ -14,6 +14,8 @@ export interface InstagramMedia {
   permalink: string;
   caption?: string;
   timestamp: string;
+  like_count?: number;
+  comments_count?: number;
 }
 
 interface GraphApiMediaResponse {
@@ -25,11 +27,13 @@ interface GraphApiMediaResponse {
     permalink: string;
     caption?: string;
     timestamp: string;
+    like_count?: number;
+    comments_count?: number;
   }>;
   paging?: { cursors: { after: string }; next?: string };
 }
 
-const FIELDS = "id,media_type,media_url,thumbnail_url,permalink,caption,timestamp";
+const FIELDS = "id,media_type,media_url,thumbnail_url,permalink,caption,timestamp,like_count,comments_count";
 const LIMIT = 12;
 
 export async function getInstagramMedia(limit = LIMIT): Promise<InstagramMedia[]> {
@@ -66,5 +70,7 @@ export async function getInstagramMedia(limit = LIMIT): Promise<InstagramMedia[]
       permalink: m.permalink,
       caption: m.caption,
       timestamp: m.timestamp,
+      like_count: typeof m.like_count === "number" ? m.like_count : undefined,
+      comments_count: typeof m.comments_count === "number" ? m.comments_count : undefined,
     }));
 }

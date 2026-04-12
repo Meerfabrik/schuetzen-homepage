@@ -1,5 +1,6 @@
 import ContactForm from "./ContactForm";
 import { SectionTitleFadeIn } from "@/components/SectionTitleFadeIn";
+import { ConsentGate } from "@/components/ConsentGate";
 import styles from "./page.module.css";
 
 export const metadata = {
@@ -67,6 +68,26 @@ export default function KontaktPage() {
             <ContactForm />
           </div>
 
+        </div>
+      </section>
+
+      <section className={`section ${styles.mapSection}`}>
+        <div className="container">
+          <div className={styles.mapWrap}>
+            <ConsentGate
+              category="maps"
+              providerLabel="Google Maps"
+              description="Um die Karte unseres Standorts (Winnendonk 30, 40667 Meerbusch) anzuzeigen, müssen Sie das Laden von Google Maps erlauben. Dabei werden Daten an Google in den USA übertragen."
+            >
+              <iframe
+                title="Standort Winnendonk 30, 40667 Meerbusch"
+                src="https://www.google.com/maps?q=Winnendonk+30,+40667+Meerbusch&output=embed"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                allowFullScreen
+              />
+            </ConsentGate>
+          </div>
         </div>
       </section>
     </>

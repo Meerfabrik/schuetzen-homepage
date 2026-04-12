@@ -101,7 +101,7 @@ export async function getAllAppointments(): Promise<Appointment[]> {
   return dates.map(toAppointment);
 }
 
-export async function getUpcomingAppointments(limit = 6): Promise<Appointment[]> {
+export async function getUpcomingAppointments(limit?: number): Promise<Appointment[]> {
   const today = new Date().toISOString().slice(0, 19);
   const dates = await directus.request<DirectusDate[]>(
     readItems("schuetzen_dates", {
@@ -116,7 +116,7 @@ export async function getUpcomingAppointments(limit = 6): Promise<Appointment[]>
         ],
       },
       sort: ["start_date"],
-      limit,
+      ...(typeof limit === "number" ? { limit } : {}),
       fields: [...dateFields],
     })
   );
