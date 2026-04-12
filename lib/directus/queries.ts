@@ -377,6 +377,8 @@ export async function getAllAlbumsWithImages(category: GalleryCategory): Promise
       sort: sortByTitle ? ["title"] : ["-year", "sort", "title"],
       fields: ["id", "title", "slug", "category", "year", "description", "cover_image", "sort", "status",
                "images.id", "images.title", "images.image", "images.album", "images.sort"],
+      limit: -1,
+      deep: { images: { _limit: -1 } },
     })
   );
   return albums.map((a) => ({

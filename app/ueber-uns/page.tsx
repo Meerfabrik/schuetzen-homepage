@@ -10,13 +10,32 @@ export const metadata = {
 
 export const revalidate = 300; // 5 Minuten
 
+const STELLV_PRIORITY = ["vorsitzend", "geschäftsführ", "schatzmeister"];
+
+function sortVorstandStellv<T extends { title?: string | null }>(images: T[]): T[] {
+  const rank = (img: T) => {
+    const t = (img.title ?? "").toLowerCase();
+    if (!t.includes("stellv")) return STELLV_PRIORITY.length;
+    const idx = STELLV_PRIORITY.findIndex((k) => t.includes(k));
+    return idx === -1 ? STELLV_PRIORITY.length : idx;
+  };
+  return [...images].sort((a, b) => rank(a) - rank(b));
+}
+
 export default async function UeberUnsPage() {
   const [albumsWithImages, kompanien] = await Promise.all([
     getAllAlbumsWithImages("vorstand"),
     getAllKompanien(),
   ]);
 
-  const hasVorstand = albumsWithImages.some((a) => a.images.length > 0);
+  const vorstandOrder = ["Geschäftsführender Vorstand", "Vorstand", "Ehrenrat"];
+  const sortedAlbums = [...albumsWithImages].sort((a, b) => {
+    const ai = vorstandOrder.indexOf(a.album.title);
+    const bi = vorstandOrder.indexOf(b.album.title);
+    return (ai === -1 ? vorstandOrder.length : ai) - (bi === -1 ? vorstandOrder.length : bi);
+  });
+
+  const hasVorstand = sortedAlbums.some((a) => a.images.length > 0);
 
   return (
     <>
@@ -34,13 +53,17 @@ export default async function UeberUnsPage() {
                 title="Der Vorstand der Bruderschaft"
                 subtitle="Vorstand und Ehrenrat unserer Bruderschaft"
               />
-              {albumsWithImages
+              {sortedAlbums
                 .filter(({ images }) => images.length > 0)
-                .map(({ album, images }) => (
+                .map(({ album, images }) => {
+                  const displayImages = album.title === "Vorstand"
+                    ? sortVorstandStellv(images)
+                    : images;
+                  return (
                   <VorstandCards
                     key={album.id}
                     heading={album.title}
-                    images={images.map((img) => ({
+                    images={displayImages.map((img) => ({
                       public_id: String(img.id),
                       thumbUrl: img.thumbUrl,
                       fullUrl: img.fullUrl,
@@ -48,7 +71,8 @@ export default async function UeberUnsPage() {
                     }))}
                     showAccentLine
                   />
-                ))}
+                  );
+                })}
             </div>
           )}
 
