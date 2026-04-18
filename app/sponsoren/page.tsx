@@ -1,5 +1,5 @@
 import { getAllSponsors } from "@/lib/directus/queries";
-import type { SponsorLevel } from "@/lib/directus/types";
+import type { Sponsor } from "@/lib/directus/types";
 import SponsorCard from "@/components/SponsorCard";
 import styles from "./page.module.css";
 
@@ -11,23 +11,54 @@ export const metadata = {
     "Unsere Sponsoren und Partner – Unternehmen und Förderer, die die St. Sebastianus Schützenbruderschaft Büderich unterstützen.",
 };
 
-const LEVEL_LABELS: Record<SponsorLevel, string> = {
+const LEVEL_LABELS: Record<string, string> = {
+  premium: "Premium-Partner",
   haupt: "Hauptsponsoren",
-  premium: "Premium-Sponsoren",
+  gold: "Gold-Sponsoren",
+  silber: "Silber-Sponsoren",
+  bronze: "Bronze-Sponsoren",
+  foerderer: "Förderer",
+  partner: "Partner",
 };
 
-const LEVEL_ORDER: SponsorLevel[] = ["haupt", "premium"];
+const LEVEL_PRIORITY: Record<string, number> = {
+  premium: 0,
+  haupt: 1,
+  gold: 2,
+  silber: 3,
+  bronze: 4,
+  foerderer: 5,
+  partner: 6,
+};
+
+function labelForLevel(level: string): string {
+  const key = level.toLowerCase();
+  if (LEVEL_LABELS[key]) return LEVEL_LABELS[key];
+  const clean = level.replace(/[-_]+/g, " ").trim();
+  return clean.charAt(0).toUpperCase() + clean.slice(1);
+}
+
+function comparePriority(a: string, b: string): number {
+  const keyA = a.toLowerCase();
+  const keyB = b.toLowerCase();
+  const priA = LEVEL_PRIORITY[keyA] ?? Number.MAX_SAFE_INTEGER;
+  const priB = LEVEL_PRIORITY[keyB] ?? Number.MAX_SAFE_INTEGER;
+  if (priA !== priB) return priA - priB;
+  return keyA.localeCompare(keyB);
+}
 
 export default async function SponsorenPage() {
   const sponsors = await getAllSponsors();
 
-  const byLevel: Record<SponsorLevel, typeof sponsors> = {
-    haupt: [],
-    premium: [],
-  };
+  const byLevel = new Map<string, Sponsor[]>();
   for (const s of sponsors) {
-    byLevel[s.level]?.push(s);
+    const level = s.level || "sonstige";
+    const list = byLevel.get(level) ?? [];
+    list.push(s);
+    byLevel.set(level, list);
   }
+
+  const sortedLevels = Array.from(byLevel.keys()).sort(comparePriority);
 
   return (
     <>
@@ -47,14 +78,12 @@ export default async function SponsorenPage() {
               <strong>Noch keine Sponsoren eingetragen</strong>
             </div>
           ) : (
-            LEVEL_ORDER.map((level) => {
-              const list = byLevel[level];
+            sortedLevels.map((level) => {
+              const list = byLevel.get(level);
               if (!list?.length) return null;
               return (
                 <div key={level} className={styles.ebene}>
-                  <h2 className="section-title">
-                    {LEVEL_LABELS[level]}
-                  </h2>
+                  <h2 className="section-title">{labelForLevel(level)}</h2>
                   <div className={styles.grid}>
                     {list.map((sponsor) => (
                       <SponsorCard key={sponsor.id} sponsor={sponsor} />

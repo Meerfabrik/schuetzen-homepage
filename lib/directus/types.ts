@@ -43,7 +43,7 @@ export interface DirectusSponsor {
 }
 
 /** Einheitliches Sponsor-Format, das von den Komponenten konsumiert wird. */
-export type SponsorLevel = "haupt" | "premium";
+export type SponsorLevel = string;
 
 export interface Sponsor {
   id: number;
