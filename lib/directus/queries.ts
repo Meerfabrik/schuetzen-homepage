@@ -130,7 +130,7 @@ function toSponsor(s: DirectusSponsor): Sponsor {
     id: s.id,
     title: s.title,
     logoUrl: s.logo ? assetUrl(s.logo, 600, undefined, "contain") : null,
-    level: s.level as Sponsor["level"],
+    level: (s.level ?? "").toString(),
     link: s.link,
   };
 }
