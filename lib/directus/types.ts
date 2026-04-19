@@ -26,6 +26,7 @@ export interface DirectusDate {
 export interface Appointment {
   id: number;
   title: string;
+  slug: string;
   startDate: string;
   endDate: string | null;
   location: string;

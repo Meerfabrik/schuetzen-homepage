@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { Appointment } from "@/lib/directus/types";
 import styles from "./AppointmentCard.module.css";
 
@@ -74,11 +75,11 @@ const timeOpts: Intl.DateTimeFormatOptions = {
   minute: "2-digit",
 };
 
-function formatDate(startDate: string): string {
+export function formatDate(startDate: string): string {
   return new Date(startDate).toLocaleDateString("de-DE", dateOpts);
 }
 
-function formatDateRange(startDate: string, endDate?: string | null): string {
+export function formatDateRange(startDate: string, endDate?: string | null): string {
   const startStr = formatDate(startDate);
   if (!endDate?.trim()) return startStr;
   const endStr = formatDate(endDate);
@@ -93,7 +94,7 @@ function formatDateRange(startDate: string, endDate?: string | null): string {
   return `${startStr} – ${endStr}`;
 }
 
-function formatTimeRange(startDate: string, endDate?: string | null): string {
+export function formatTimeRange(startDate: string, endDate?: string | null): string {
   const start = new Date(startDate);
   const startTimeStr = start.toLocaleTimeString("de-DE", timeOpts);
   if (!endDate?.trim()) {
@@ -123,8 +124,10 @@ export default function AppointmentCard({
   appointment,
   variant = "card",
 }: AppointmentCardProps) {
-  const hasLink = appointment.link?.trim();
   const plainDescription = appointment.description ? stripHtml(appointment.description) : "";
+  const end = appointment.endDate?.trim();
+  const isMultiDay = end ? formatDate(appointment.startDate) !== formatDate(end) : false;
+  const href = `/veranstaltungen/${appointment.slug}`;
 
   const content = (
     <>
@@ -148,17 +151,12 @@ export default function AppointmentCard({
           <CalendarIcon />
           {formatDateRange(appointment.startDate, appointment.endDate ?? null)}
         </span>
-        {(() => {
-          const end = appointment.endDate?.trim();
-          const isMultiDay = end ? formatDate(appointment.startDate) !== formatDate(end) : false;
-          if (isMultiDay) return null;
-          return (
-            <span className={styles.time}>
-              <ClockIcon />
-              {formatTimeRange(appointment.startDate, appointment.endDate ?? null)}
-            </span>
-          );
-        })()}
+        {!isMultiDay && (
+          <span className={styles.time}>
+            <ClockIcon />
+            {formatTimeRange(appointment.startDate, appointment.endDate ?? null)}
+          </span>
+        )}
         {appointment.location && (
           <span className={styles.location}>
             <PinIcon />
@@ -171,20 +169,13 @@ export default function AppointmentCard({
             {plainDescription.length > 120 ? "…" : ""}
           </p>
         )}
-        {hasLink && variant !== "list" && (
+        {variant !== "list" && (
           <span className={styles.readMore}>Mehr erfahren →</span>
         )}
       </div>
-      {variant === "list" && hasLink && (
+      {variant === "list" && (
         <div className={styles.ctaWrap}>
-          <a
-            href={appointment.link!}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.ctaBtn}
-          >
-            Mehr erfahren →
-          </a>
+          <span className={styles.ctaBtn}>Mehr erfahren →</span>
         </div>
       )}
     </>
@@ -192,18 +183,9 @@ export default function AppointmentCard({
 
   const className = `${styles.card} ${variant === "list" ? styles.list : ""}`.trim();
 
-  if (hasLink && variant !== "list") {
-    return (
-      <a
-        href={appointment.link!}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={className}
-      >
-        {content}
-      </a>
-    );
-  }
-
-  return <div className={className}>{content}</div>;
+  return (
+    <Link href={href} className={className}>
+      {content}
+    </Link>
+  );
 }

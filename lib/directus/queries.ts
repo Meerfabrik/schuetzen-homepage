@@ -72,10 +72,17 @@ export async function getNewsBySlug(slug: string): Promise<NewsArticle | null> {
 
 const dateFields = ["id", "title", "start_date", "end_date", "location", "text", "image", "link", "published", "type"] as const;
 
+function appointmentSlug(d: Pick<DirectusDate, "id" | "title">): string {
+  // ID am Ende verhindert Kollisionen bei wiederkehrenden Terminen mit gleichem Titel.
+  const base = slugify(d.title);
+  return base ? `${base}-${d.id}` : String(d.id);
+}
+
 function toAppointment(d: DirectusDate): Appointment {
   return {
     id: d.id,
     title: d.title,
+    slug: appointmentSlug(d),
     startDate: d.start_date,
     endDate: d.end_date,
     location: d.location,
@@ -99,6 +106,33 @@ export async function getAllAppointments(): Promise<Appointment[]> {
     })
   );
   return dates.map(toAppointment);
+}
+
+export async function getAppointmentBySlug(slug: string): Promise<Appointment | null> {
+  // Directus hat kein Slug-Feld für Termine — Slug wird aus Titel+ID generiert.
+  // ID aus dem Slug ziehen (Suffix nach letztem "-"), danach gezielt laden.
+  const idMatch = slug.match(/-(\d+)$/);
+  if (!idMatch) return null;
+  const id = Number(idMatch[1]);
+  const dates = await directus.request<DirectusDate[]>(
+    readItems("schuetzen_dates", {
+      filter: {
+        id: { _eq: id },
+        published: { _eq: true },
+        _and: [
+          { _or: [{ type: { _null: true } }, { type: { _neq: "schuetzenfest" } }] },
+        ],
+      },
+      fields: [...dateFields],
+      limit: 1,
+    })
+  );
+  const d = dates[0];
+  if (!d) return null;
+  const appointment = toAppointment(d);
+  // Slug muss exakt übereinstimmen (Schutz vor manipulierten IDs mit beliebigem Prefix).
+  if (appointment.slug !== slug) return null;
+  return appointment;
 }
 
 export async function getUpcomingAppointments(limit?: number): Promise<Appointment[]> {

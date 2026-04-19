@@ -1,0 +1,196 @@
+/* Kompakter Header, wenn kein Bild vorhanden ist */
+.heroCompact {
+  padding: 2rem 1.5rem !important;
+}
+
+.heroCompact h1 {
+  margin-bottom: 0.35rem;
+}
+
+.badge {
+  display: inline-block;
+  background: var(--gold);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.35rem 0.9rem;
+  border-radius: 9999px;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.badgeCompact {
+  display: inline-block;
+  background: var(--gold);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.3rem 0.8rem;
+  border-radius: 9999px;
+  margin-bottom: 0.6rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.heroImg {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 560px;
+  overflow: hidden;
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 30%, rgba(0, 0, 0, 0.7));
+}
+
+.heroContent {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2rem 1.5rem;
+  color: #fff;
+  z-index: 1;
+}
+
+.heroContent h1 {
+  font-family: "Encode Sans Condensed", sans-serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.heroMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  opacity: 0.95;
+}
+
+.heroMeta span {
+  position: relative;
+}
+
+.heroMeta span + span::before {
+  content: "·";
+  position: absolute;
+  left: -0.75rem;
+  opacity: 0.7;
+}
+
+.heroMetaCompact {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+.heroMetaCompact span + span::before {
+  content: "·";
+  margin-right: 1rem;
+  opacity: 0.7;
+}
+
+.content {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: var(--text);
+}
+
+.content h2 {
+  font-family: "Encode Sans Condensed", sans-serif;
+  font-size: 1.5rem;
+  color: var(--green);
+  margin: 2rem 0 0.75rem;
+}
+
+.content h3 {
+  font-family: "Encode Sans Condensed", sans-serif;
+  font-size: 1.2rem;
+  color: var(--green);
+  margin: 1.5rem 0 0.5rem;
+}
+
+.content p {
+  margin-bottom: 1.25rem;
+}
+
+.content strong {
+  font-weight: 700;
+  color: var(--text);
+}
+
+.content a {
+  color: var(--green);
+  text-decoration: underline;
+}
+
+.content img {
+  width: 100%;
+  border-radius: var(--radius);
+  margin: 1.5rem 0;
+  box-shadow: var(--shadow);
+}
+
+.content ul,
+.content ol {
+  margin: 0 0 1.25rem 1.25rem;
+  padding-left: 1rem;
+}
+
+.content li {
+  margin-bottom: 0.4rem;
+}
+
+.ctaWrap {
+  max-width: 720px;
+  margin: 2rem auto 0;
+  padding: 0 1.5rem;
+}
+
+.ctaBtn {
+  display: inline-block;
+  background: var(--gold);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.75rem 1.4rem;
+  border-radius: var(--radius);
+  text-decoration: none;
+  transition: filter 0.2s;
+}
+
+.ctaBtn:hover {
+  filter: brightness(0.92);
+}
+
+.backWrap {
+  max-width: 720px;
+  margin: 2.5rem auto 0;
+  padding: 0 1.5rem;
+}
+
+.backLink {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.backLink:hover {
+  color: var(--green);
+}

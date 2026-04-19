@@ -20,7 +20,7 @@ export default async function NewsDetailPage({ params }: Props) {
   if (!article) notFound();
 
   const heroImageUrl = article.imageUrl
-    ? article.imageUrl.replace("width=800", "width=1200").replace("height=450", "height=600")
+    ? article.imageUrl.replace("width=800", "width=1600").replace("height=450", "height=900")
     : null;
 
   const formattedDate = new Date(article.date).toLocaleDateString("de-DE", {
