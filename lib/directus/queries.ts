@@ -87,7 +87,7 @@ function toAppointment(d: DirectusDate): Appointment {
     endDate: d.end_date,
     location: d.location,
     description: d.text,
-    imageUrl: d.image ? assetUrl(d.image, 800, 450) : null,
+    imageUrl: d.image ? assetUrl(d.image, 1600, 900) : null,
     link: d.link,
   };
 }
