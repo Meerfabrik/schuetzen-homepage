@@ -35,11 +35,7 @@ export default async function TerminDetailPage({ params }: Props) {
   const appointment = await getAppointmentBySlug(params.slug);
   if (!appointment) notFound();
 
-  const heroImageUrl = appointment.imageUrl
-    ? appointment.imageUrl
-        .replace("width=800", "width=1600")
-        .replace("height=450", "height=900")
-    : null;
+  const heroImageUrl = appointment.imageUrl;
 
   const end = appointment.endDate?.trim();
   const isMultiDay = end
