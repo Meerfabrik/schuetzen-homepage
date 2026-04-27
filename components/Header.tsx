@@ -38,6 +38,7 @@ const SCROLL_THRESHOLD = 40;
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState<boolean>(false);
   const [openMobileItem, setOpenMobileItem] = useState<string | null>(null);
+  const [openMobileSubItem, setOpenMobileSubItem] = useState<string | null>(null);
   const [isScrolled, setIsScrolled] = useState<boolean>(false);
   const headerRef = useRef<HTMLElement>(null);
 
@@ -125,16 +126,59 @@ export default function Header() {
                   </button>
                   {openMobileItem === item.href && (
                     <div className={styles.mobileSub}>
-                      {item.children.map((c) => (
-                        <Link
-                          key={c.href}
-                          href={c.href}
-                          className={styles.mobileSubLink}
-                          onClick={() => setMobileOpen(false)}
-                        >
-                          › {c.label}
-                        </Link>
-                      ))}
+                      {item.children.map((c) =>
+                        c.children ? (
+                          <div key={c.href} className={styles.mobileSubItem}>
+                            <button
+                              className={styles.mobileSubToggle}
+                              onClick={() =>
+                                setOpenMobileSubItem(
+                                  openMobileSubItem === c.href ? null : c.href,
+                                )
+                              }
+                            >
+                              › {c.label}
+                              <span
+                                className={
+                                  openMobileSubItem === c.href ? styles.rotated : ""
+                                }
+                              >
+                                ▾
+                              </span>
+                            </button>
+                            {openMobileSubItem === c.href && (
+                              <div className={styles.mobileSubSub}>
+                                <Link
+                                  href={c.href}
+                                  className={styles.mobileSubSubLink}
+                                  onClick={() => setMobileOpen(false)}
+                                >
+                                  › {c.label}
+                                </Link>
+                                {c.children.map((g) => (
+                                  <Link
+                                    key={g.href}
+                                    href={g.href}
+                                    className={styles.mobileSubSubLink}
+                                    onClick={() => setMobileOpen(false)}
+                                  >
+                                    › {g.label}
+                                  </Link>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        ) : (
+                          <Link
+                            key={c.href}
+                            href={c.href}
+                            className={styles.mobileSubLink}
+                            onClick={() => setMobileOpen(false)}
+                          >
+                            › {c.label}
+                          </Link>
+                        ),
+                      )}
                     </div>
                   )}
                 </>
