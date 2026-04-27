@@ -215,6 +215,7 @@ const groups: Group[] = [
       { year: 2022, name: "Ferdinand van Meegen I" },
       { year: 2023, name: "Monique Schuchardt I" },
       { year: 2024, name: "Ralf Höterkes II" },
+      { year: 2025, name: "Marcel Hermes" },
     ],
   },
 ];

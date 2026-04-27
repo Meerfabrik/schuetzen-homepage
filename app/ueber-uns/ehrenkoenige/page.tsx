@@ -106,6 +106,7 @@ const groups: Group[] = [
       { year: 2022, name: "Jennifer Hermes", title: "K.G. Blau Weiss Büderich 1958" },
       { year: 2023, name: "Jessica Rehfeld", title: "K.G. Blau Weiss Büderich 1958" },
       { year: 2024, name: "Daniel Thywissen", title: "Politiker" },
+      { year: 2025, name: "Nicole Niederdellmann-Siemes", title: "Politiker" },
     ],
   },
 ];
