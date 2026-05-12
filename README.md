@@ -104,7 +104,8 @@ git push -u origin main
    - `NEXT_PUBLIC_SANITY_PROJECT_ID`
    - `NEXT_PUBLIC_SANITY_DATASET`
    - `RESEND_API_KEY`
-   - `CONTACT_EMAIL`
+   - `CONTACT_FROM_EMAIL` (Absender, muss zu einer in Resend verifizierten Domain gehören, z. B. `Kontaktformular <kontakt@schuetzen-buederich.de>`)
+   - `CONTACT_TO_EMAIL` (Empfängeradresse, an die Kontaktanfragen geschickt werden)
    - (optional) `INSTAGRAM_ACCESS_TOKEN`, `INSTAGRAM_USER_ID`, `NEXT_PUBLIC_INSTAGRAM_PROFILE_URL` für den Instagram-Feed
 5. Deploy klicken 🎉
 
@@ -135,10 +136,31 @@ Ohne diese Variablen erscheint ein Platzhalter mit Link „Zu Instagram“. Mit 
 ---
 
 ## ✉️ Kontaktformular aktivieren
-```bash
-npm install resend
-```
-Dann in `app/api/contact/route.ts` den OPTION A Block einkommentieren.
+
+Das Formular unter `/kontakt` verschickt E-Mails über [Resend](https://resend.com). Damit der Versand funktioniert, sind drei Umgebungsvariablen nötig.
+
+### 1. Resend-Account und Domain
+1. Account auf https://resend.com anlegen.
+2. Unter **Domains** eure Absender-Domain hinzufügen (z. B. `schuetzen-buederich.de`) und die angezeigten DNS-Einträge (SPF, DKIM) bei eurem DNS-Anbieter eintragen. Erst nach erfolgreicher Verifizierung darf von dieser Domain gesendet werden.
+3. Unter **API Keys** einen neuen Key erzeugen (Berechtigung: *Sending access*).
+
+### 2. Variablen in Vercel hinterlegen
+Vercel-Projekt → **Settings → Environment Variables** → für *Production*, *Preview* und *Development*:
+
+| Variable | Beispielwert | Beschreibung |
+|----------|--------------|--------------|
+| `RESEND_API_KEY` | `re_xxx…` | Der API-Key aus Resend. |
+| `CONTACT_FROM_EMAIL` | `Kontaktformular <kontakt@schuetzen-buederich.de>` | Absenderadresse. Die Domain (`schuetzen-buederich.de`) muss in Resend verifiziert sein. |
+| `CONTACT_TO_EMAIL` | `vorstand@schuetzen-buederich.de` | Empfängeradresse, an die Kontaktanfragen gehen. |
+
+Nach dem Speichern: **Redeploy** der aktuellen Production-Version, sonst werden die neuen Variablen nicht übernommen.
+
+### 3. Test
+- Auf `/kontakt` das Formular ausfüllen und absenden.
+- Bei Erfolg erscheint die grüne Bestätigung und die Mail landet bei `CONTACT_TO_EMAIL`.
+- Bei rotem Fehler: Vercel → **Logs** → Function `/api/contact` öffnen. Häufige Meldungen:
+  - „Serverkonfiguration unvollständig." → eine der drei Variablen fehlt oder ist leer.
+  - Resend-Fehler `from address … not verified` → Domain in Resend noch nicht verifiziert oder `CONTACT_FROM_EMAIL` nutzt eine andere Domain.
 
 ---
 
