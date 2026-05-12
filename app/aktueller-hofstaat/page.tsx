@@ -16,8 +16,8 @@ const KATEGORIE_LABELS: Record<HofstaatKategorie, string> = {
   ministerpaar: "Minister",
   ehrendamen: "Ehrendamen",
   gesamtbild: "Gesamtbild",
-  jungkoenig: "JungkönigIn",
-  ehrenkoenig: "EhrenkönigIn",
+  jungkoenig: "Jungkönigin",
+  ehrenkoenig: "Ehrenkönig",
   jungkoenig_minister: "Minister Jungkönigin",
 };
 
@@ -214,7 +214,7 @@ export default async function HofstaatPage() {
               {hasEhrenBlock && (
                 <div className={styles.block}>
                   <div className={styles.sectionHeading}>
-                    <h2 className="section-title">EhrenkönigIn</h2>
+                    <h2 className="section-title">Ehrenkönig</h2>
                   </div>
                   <div className={styles.singleCardGridWrap}>
                     <div className={styles.ministerGrid}>
