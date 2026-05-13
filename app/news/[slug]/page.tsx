@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import { getAllNews, getNewsBySlug } from "@/lib/directus/queries";
 import styles from "./page.module.css";
 
@@ -19,39 +18,40 @@ export default async function NewsDetailPage({ params }: Props) {
   const article = await getNewsBySlug(params.slug);
   if (!article) notFound();
 
-  const heroImageUrl = article.imageUrl
-    ? article.imageUrl.replace("width=800", "width=1600").replace("height=450", "height=900")
-    : null;
-
   const formattedDate = new Date(article.date).toLocaleDateString("de-DE", {
     day: "numeric", month: "long", year: "numeric",
   });
 
   return (
-    <>
-      {heroImageUrl ? (
-        <div className={styles.heroImg}>
-          <Image src={heroImageUrl} alt={article.title}
-            fill style={{ objectFit: "cover" }} priority />
-          <div className={styles.heroOverlay} />
-          <div className={styles.heroContent}>
-            <h1>{article.title}</h1>
-            <time className={styles.heroDate} dateTime={article.date}>{formattedDate}</time>
-          </div>
+    <article className={styles.article}>
+      <header className={styles.header}>
+        <div className={styles.meta}>
+          <span className={styles.badge}>Aktuelles</span>
+          <span className={styles.metaDivider} aria-hidden>·</span>
+          <time className={styles.date} dateTime={article.date}>{formattedDate}</time>
         </div>
-      ) : (
-        <div className={`page-hero ${styles.heroCompact}`}>
-          <h1>{article.title}</h1>
-          <time className={styles.heroDate} dateTime={article.date}>{formattedDate}</time>
-        </div>
-      )}
+        <h1 className={styles.title}>{article.title}</h1>
+      </header>
 
-      <article className="section">
+      <div className={styles.body}>
+        {article.imageUrl && (
+          <figure className={styles.floatImage}>
+            {/* Plain <img> bewusst gewählt: das Bild bestimmt sein eigenes Seitenverhältnis,
+                die Figure schrumpft exakt auf seine gerenderte Größe — kein Padding/Rand möglich. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={article.imageUrl}
+              alt={article.title}
+              className={styles.heroImg}
+              loading="eager"
+            />
+          </figure>
+        )}
         <div
           className={styles.content}
           dangerouslySetInnerHTML={{ __html: article.content }}
         />
-      </article>
-    </>
+      </div>
+    </article>
   );
 }

@@ -19,14 +19,41 @@ function slugify(text: string): string {
     .replace(/(^-|-$)/g, "");
 }
 
-/** Directus-Post in einheitliches NewsArticle-Format umwandeln. */
+/** title_image kann je nach Query eine UUID oder ein expandiertes File-Objekt sein. */
+function imageId(img: DirectusPost["title_image"]): string | null {
+  if (!img) return null;
+  return typeof img === "string" ? img : img.id;
+}
+
+/** Listen-Variante: feste 16:9-Crop-Vorschau für gleichmäßige Kacheln. */
 function toNewsArticle(post: DirectusPost): NewsArticle {
+  const id = imageId(post.title_image);
   return {
     id: post.id,
     title: post.title,
     slug: post.url_slug || slugify(post.title),
     date: post.date,
-    imageUrl: post.title_image ? assetUrl(post.title_image, 800, 450) : null,
+    imageUrl: id ? assetUrl(id, 800, 450) : null,
+    imageWidth: null,
+    imageHeight: null,
+    excerpt: post.summary,
+    content: post.text,
+  };
+}
+
+/** Detail-Variante: Bild im Original-Seitenverhältnis (kein Zwangs-Crop). */
+function toNewsArticleDetail(post: DirectusPost): NewsArticle {
+  const img = typeof post.title_image === "object" ? post.title_image : null;
+  const id = imageId(post.title_image);
+  return {
+    id: post.id,
+    title: post.title,
+    slug: post.url_slug || slugify(post.title),
+    date: post.date,
+    // Nur Breite skalieren → Original-Aspect bleibt erhalten (Quer- und Hochkant-Bilder werden korrekt geliefert).
+    imageUrl: id ? assetUrl(id, 1600) : null,
+    imageWidth: img?.width ?? null,
+    imageHeight: img?.height ?? null,
     excerpt: post.summary,
     content: post.text,
   };
@@ -57,15 +84,19 @@ export async function getLatestNews(count = 3): Promise<NewsArticle[]> {
 
 export async function getNewsBySlug(slug: string): Promise<NewsArticle | null> {
   // Da Directus kein Slug-Feld hat, laden wir alle veröffentlichten Posts
-  // und suchen per generiertem Slug.
+  // und suchen per generiertem Slug. Für die Detailansicht expandieren wir
+  // title_image, damit Breite/Höhe für korrekte Hochkant-Darstellung verfügbar sind.
   const posts = await directus.request<DirectusPost[]>(
     readItems("schuetzen_posts", {
       filter: { published: { _eq: true } },
-      fields: ["id", "title", "summary", "title_image", "text", "date", "published", "url_slug"],
+      fields: [
+        "id", "title", "summary", "text", "date", "published", "url_slug",
+        "title_image.id", "title_image.width", "title_image.height",
+      ],
     })
   );
   const article = posts.find((p) => (p.url_slug || slugify(p.title)) === slug);
-  return article ? toNewsArticle(article) : null;
+  return article ? toNewsArticleDetail(article) : null;
 }
 
 // ── TERMINE ───────────────────────────────────────────────────────────────────

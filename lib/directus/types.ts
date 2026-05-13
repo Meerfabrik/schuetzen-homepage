@@ -2,7 +2,8 @@ export interface DirectusPost {
   id: number;
   title: string;
   summary: string;
-  title_image: string; // UUID referencing directus_files
+  /** Entweder eine UUID oder ein expandiertes File-Objekt (wenn .id/.width/.height angefragt wurden). */
+  title_image: string | { id: string; width?: number | null; height?: number | null } | null;
   text: string;        // HTML content
   date: string;        // ISO 8601 datetime
   published: boolean;
@@ -118,6 +119,9 @@ export interface NewsArticle {
   slug: string;
   date: string;
   imageUrl: string | null;
+  /** Original-Seitenverhältnis (nur in der Detail-Abfrage gesetzt). */
+  imageWidth: number | null;
+  imageHeight: number | null;
   excerpt: string;
   content: string; // HTML
 }
