@@ -561,6 +561,30 @@ export default function DatenschutzPage() {
             </p>
           </div>
 
+          <div className={styles.abschnitt}>
+            <h2>Reichweitenmessung mit PostHog</h2>
+            <p>
+              Wir nutzen den Dienst &bdquo;PostHog&ldquo; (PostHog Inc., 2261 Market Street #4008,
+              San Francisco, CA 94114, USA) zur statistischen Auswertung der Nutzung unserer Website.
+              Dabei werden Daten wie aufgerufene Seiten, Klicks auf Inhalte (z.&nbsp;B. Sponsoren,
+              Nachrichten, Veranstaltungen), Geräte- und Browserinformationen sowie eine gekürzte
+              IP-Adresse verarbeitet. Die Erfassung erfolgt über die EU-Infrastruktur von PostHog
+              (eu.i.posthog.com).
+            </p>
+            <p>
+              Die Verarbeitung erfolgt ausschließlich auf Grundlage Ihrer Einwilligung
+              (Art. 6 Abs. 1 lit. a DSGVO), die Sie über unseren Cookie-Banner erteilen können. Sie
+              können Ihre Einwilligung jederzeit über den Link &bdquo;Cookie-Einstellungen&ldquo; im
+              Seitenfuß widerrufen. Wir nutzen die so gewonnenen, aggregierten Erkenntnisse, um
+              unsere Inhalte zu verbessern.
+            </p>
+            <p>
+              Weitere Informationen zur Datenverarbeitung durch PostHog finden Sie unter
+              {" "}
+              <a href="https://posthog.com/privacy" target="_blank" rel="noopener noreferrer">https://posthog.com/privacy</a>.
+            </p>
+          </div>
+
           <div className={styles.footer}>
             Erstellt mit Datenschutz-Generator.de von RA Dr. Thomas Schwenke
           </div>

@@ -10,12 +10,14 @@ export function CookieBanner() {
   const [showSettings, setShowSettings] = useState(false);
   const [draftMaps, setDraftMaps] = useState(consent.maps);
   const [draftInsta, setDraftInsta] = useState(consent.instagram);
+  const [draftAnalytics, setDraftAnalytics] = useState(consent.analytics);
 
   if (!bannerOpen) return null;
 
   const openSettings = () => {
     setDraftMaps(consent.maps);
     setDraftInsta(consent.instagram);
+    setDraftAnalytics(consent.analytics);
     setShowSettings(true);
   };
 
@@ -30,9 +32,10 @@ export function CookieBanner() {
           <>
             <p className={styles.text}>
               Wir verwenden auf unserer Website nur technisch notwendige Cookies. Zusätzlich binden wir
-              externe Inhalte ein (z.&nbsp;B. Google Maps und Instagram), die Daten an die jeweiligen
-              Anbieter übertragen. Dafür benötigen wir Ihre Einwilligung. Sie können diese jederzeit
-              widerrufen. Details finden Sie in unserer{" "}
+              externe Inhalte ein (z.&nbsp;B. Google Maps und Instagram) und nutzen ein
+              Analyse-Werkzeug (PostHog), um die Nutzung unserer Seite zu verstehen. Dafür benötigen
+              wir Ihre Einwilligung. Sie können diese jederzeit widerrufen. Details finden Sie in
+              unserer{" "}
               <Link href="/datenschutz" className={styles.link}>
                 Datenschutzerklärung
               </Link>
@@ -97,6 +100,21 @@ export function CookieBanner() {
                   Inc. übertragen.
                 </p>
               </li>
+
+              <li className={styles.option}>
+                <label className={styles.optionHeader}>
+                  <input
+                    type="checkbox"
+                    checked={draftAnalytics}
+                    onChange={(e) => setDraftAnalytics(e.target.checked)}
+                  />
+                  <span className={styles.optionTitle}>Statistik / Analyse</span>
+                </label>
+                <p className={styles.optionDesc}>
+                  Hilft uns zu verstehen, welche Inhalte besucht werden (PostHog, EU-Hosting). Es
+                  werden anonymisierte Nutzungsdaten erfasst.
+                </p>
+              </li>
             </ul>
 
             <div className={styles.buttonRow}>
@@ -109,7 +127,13 @@ export function CookieBanner() {
               </button>
               <button
                 type="button"
-                onClick={() => saveCustom({ maps: draftMaps, instagram: draftInsta })}
+                onClick={() =>
+                  saveCustom({
+                    maps: draftMaps,
+                    instagram: draftInsta,
+                    analytics: draftAnalytics,
+                  })
+                }
                 className={styles.btnPrimary}
               >
                 Auswahl speichern

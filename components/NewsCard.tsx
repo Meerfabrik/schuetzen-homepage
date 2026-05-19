@@ -1,6 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import type { NewsArticle } from "@/lib/directus/types";
+import { track } from "@/lib/analytics";
 import styles from "./NewsCard.module.css";
 
 const CalendarIcon = () => (
@@ -37,7 +40,17 @@ export default function NewsCard({ article, category = "Aktuelles" }: NewsCardPr
   });
 
   return (
-    <Link href={`/news/${article.slug}`} className={styles.card}>
+    <Link
+      href={`/news/${article.slug}`}
+      className={styles.card}
+      onClick={() =>
+        track("news_clicked", {
+          slug: article.slug,
+          title: article.title,
+          category,
+        })
+      }
+    >
       <span className={styles.badge}>{category}</span>
       <div className={styles.imgWrap}>
         {article.imageUrl ? (

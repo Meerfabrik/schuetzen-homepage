@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { ContactFormData, FormStatus } from "@/lib/types";
+import { track } from "@/lib/analytics";
 import styles from "./ContactForm.module.css";
 
 export default function ContactForm() {
@@ -31,13 +32,16 @@ export default function ContactForm() {
 
       if (res.ok) {
         setStatus("success");
+        track("contact_form_submitted", { status: "success" });
         setForm({ name: "", email: "", subject: "", message: "" });
         setHoneypot("");
       } else {
         setStatus("error");
+        track("contact_form_submitted", { status: "error", http_status: res.status });
       }
     } catch {
       setStatus("error");
+      track("contact_form_submitted", { status: "exception" });
     }
   }
 

@@ -16,6 +16,7 @@ interface ConsentGateProps {
 const PROVIDER_DEFAULT: Record<ConsentCategory, string> = {
   maps: "Google Maps",
   instagram: "Instagram",
+  analytics: "Statistik / Analyse",
 };
 
 export function ConsentGate({ category, children, providerLabel, description }: ConsentGateProps) {

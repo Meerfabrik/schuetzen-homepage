@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
+import { track } from "@/lib/analytics";
 import styles from "./GalerieGrid.module.css";
 
 export type GalerieImage = {
@@ -19,7 +20,18 @@ type Props = {
 export default function GalerieGrid({ images }: Props) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
-  const open = useCallback((index: number) => setLightboxIndex(index), []);
+  const open = useCallback(
+    (index: number) => {
+      const img = images[index];
+      track("gallery_image_opened", {
+        public_id: img?.public_id,
+        title: img?.title,
+        index,
+      });
+      setLightboxIndex(index);
+    },
+    [images]
+  );
   const close = useCallback(() => setLightboxIndex(null), []);
 
   useEffect(() => {

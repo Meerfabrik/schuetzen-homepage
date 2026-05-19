@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { ConsentProvider } from "@/lib/consent";
 import { CookieBanner } from "@/components/CookieBanner";
+import { PostHogProvider } from "@/components/PostHogProvider";
 import type { ReactNode } from "react";
 
 
@@ -31,6 +32,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="de">
       <body>
         <ConsentProvider>
+          <PostHogProvider />
           <Header />
           <main>{children}</main>
           <Footer />

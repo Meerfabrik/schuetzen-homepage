@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import type { Sponsor } from "@/lib/directus/types";
+import { track } from "@/lib/analytics";
 import styles from "./SponsorCard.module.css";
 
 interface SponsorCardProps {
@@ -48,6 +51,12 @@ export default function SponsorCard({ sponsor }: SponsorCardProps) {
         rel="noopener noreferrer"
         className={className}
         aria-label={ariaLabel}
+        onClick={() =>
+          track("sponsor_clicked", {
+            sponsor_title: sponsor.title,
+            sponsor_link: sponsor.link,
+          })
+        }
       >
         {content}
       </a>

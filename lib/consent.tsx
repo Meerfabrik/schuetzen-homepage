@@ -10,15 +10,16 @@ import {
   type ReactNode,
 } from "react";
 
-export type ConsentCategory = "maps" | "instagram";
+export type ConsentCategory = "maps" | "instagram" | "analytics";
 
 export interface ConsentState {
   maps: boolean;
   instagram: boolean;
+  analytics: boolean;
 }
 
-const DEFAULT_STATE: ConsentState = { maps: false, instagram: false };
-const STORAGE_KEY = "sbb_consent_v1";
+const DEFAULT_STATE: ConsentState = { maps: false, instagram: false, analytics: false };
+const STORAGE_KEY = "sbb_consent_v2";
 
 interface ConsentContextValue {
   consent: ConsentState;
@@ -43,6 +44,7 @@ function readStored(): { state: ConsentState; decided: boolean } {
       state: {
         maps: Boolean(parsed.maps),
         instagram: Boolean(parsed.instagram),
+        analytics: Boolean(parsed.analytics),
       },
       decided: true,
     };
@@ -72,7 +74,7 @@ export function ConsentProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const acceptAll = useCallback(() => {
-    const next: ConsentState = { maps: true, instagram: true };
+    const next: ConsentState = { maps: true, instagram: true, analytics: true };
     setConsent(next);
     setDecided(true);
     setBannerOpen(false);
@@ -80,7 +82,7 @@ export function ConsentProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const rejectAll = useCallback(() => {
-    const next: ConsentState = { maps: false, instagram: false };
+    const next: ConsentState = { maps: false, instagram: false, analytics: false };
     setConsent(next);
     setDecided(true);
     setBannerOpen(false);
